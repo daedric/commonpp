@@ -1,0 +1,38 @@
+/*
+ * File: include/commonpp/core/config.hpp.in
+ * Part of commonpp.
+ *
+ * Distributed under the 2-clause BSD licence (See LICENCE.TXT file at the
+ * project root).
+ *
+ * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
+ *
+ */
+#pragma once
+
+#include <string>
+
+#cmakedefine HAVE_POSIX_CPU_CLOCK 1
+#cmakedefine HAVE_SYSLOG 1
+#cmakedefine HAVE_THREAD_LOCAL_SPECIFIER 1
+#cmakedefine HAVE_SYS_PRCTL_H 1
+
+#define COMMONPP_VERSION "@commonpp_VERSION@"
+#define COMMONPP_MAJOR @commonpp_MAJOR@
+#define COMMONPP_MINOR @commonpp_MINOR@
+#define COMMONPP_MICRO @commonpp_MICRO@
+
+#cmakedefine HAVE_UNUSED_ATTR 1
+
+#if HAVE_UNUSED_ATTR
+# define UNUSED_ATTR __attribute__((unused))
+#else
+# define UNUSED_ATTR
+#endif
+
+UNUSED_ATTR static const std::string& commonpp_version()
+{
+    static const std::string version = COMMONPP_VERSION;
+    return version;
+}
+
