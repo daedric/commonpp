@@ -38,7 +38,7 @@ option(BUILD_BENCH "Should the bench be built" ON)
 
 set(commonpp_MAJOR "0")
 set(commonpp_MINOR "1")
-set(commonpp_MICRO "0")
+set(commonpp_MICRO "1")
 
 set(CPACK_PACKAGE_VERSION_MAJOR ${commonpp_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${commonpp_MINOR})

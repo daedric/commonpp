@@ -131,15 +131,22 @@ FWD_DECLARE_LOGGER(global_logger, BasicLogger);
 
 // clang-format off
 #ifndef NDEBUG
-# define DLOG(l, s)                                                            \
-    ENABLE_CURRENT_FCT_LOGGING();                                              \
-    BOOST_LOG_SEV(l, commonpp::s)
-# define DGLOG(sev)                                                            \
-    ENABLE_CURRENT_FCT_LOGGING();                                              \
-    LOG(::commonpp::core::global_logger, sev)
+# define DLOG(l, s) BOOST_LOG_SEV(l, commonpp::s)
+# define DGLOG(sev) LOG(::commonpp::core::global_logger, sev)
 #else
-# define DLOG(l, s) boost::iostreams::stream<boost::iostreams::null_sink>()
-# define DGLOG(sev) boost::iostreams::stream<boost::iostreams::null_sink>()
+// LOG() and GLOG() are way too complex to be in a ternary expression.
+struct NullSink
+{
+    template <typename T>
+    NullSink& operator<<(T&&)
+    {
+        return *this;
+    }
+};
+// from Google glog
+struct Voidify { void operator&(NullSink&){}};
+# define DLOG(l, s) true ? (void)0 : commonpp::core::Voidify() & commonpp::core::NullSink()
+# define DGLOG(sev) true ? (void)0 : commonpp::core::Voidify() & commonpp::core::NullSink()
 #endif
 // clang-format on
 
