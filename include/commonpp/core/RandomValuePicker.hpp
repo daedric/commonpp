@@ -15,7 +15,7 @@
 #include <random>
 #include <memory>
 
-#include <boost/config.hpp>
+#include <commonpp/core/config.hpp>
 
 namespace commonpp
 {

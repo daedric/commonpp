@@ -11,6 +11,8 @@
 #pragma once
 
 #include <string>
+#include <boost/version.hpp>
+#include <boost/config.hpp>
 
 #cmakedefine HAVE_POSIX_CPU_CLOCK 1
 #cmakedefine HAVE_SYSLOG 1
@@ -36,3 +38,7 @@ UNUSED_ATTR static const std::string& commonpp_version()
     return version;
 }
 
+#if BOOST_MAJOR == 1 && BOOST_MINOR < 55
+# define BOOST_LIKELY(x) (x)
+# define BOOST_UNLIKELY(x) (x)
+#endif
