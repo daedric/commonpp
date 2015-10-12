@@ -38,7 +38,15 @@ UNUSED_ATTR static const std::string& commonpp_version()
     return version;
 }
 
+#ifndef BOOST_MAJOR
+# define BOOST_MAJOR (BOOST_VERSION / 100000)
+#endif
+#ifndef BOOST_MINOR
+# define BOOST_MINOR (BOOST_VERSION / 100 % 1000)
+#endif
+
 #if BOOST_MAJOR == 1 && BOOST_MINOR < 55
 # define BOOST_LIKELY(x) (x)
 # define BOOST_UNLIKELY(x) (x)
 #endif
+
