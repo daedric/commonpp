@@ -27,11 +27,6 @@
 #include <boost/log/attributes/named_scope.hpp>
 #include <boost/log/attributes/scoped_attribute.hpp>
 
-#ifdef NDEBUG
-# include <boost/iostreams/stream.hpp>
-# include <boost/iostreams/device/null.hpp>
-#endif
-
 namespace commonpp
 {
 
