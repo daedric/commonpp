@@ -23,6 +23,9 @@ namespace http
 std::string url_encode(const std::string& url);
 std::string url_decode(const std::string& url);
 
+std::string url_encode(const char* begin, const char* end);
+std::string url_decode(const char* begin, const char* end);
+
 } // namespace http
 } // namespace net
 } // namespace commonpp

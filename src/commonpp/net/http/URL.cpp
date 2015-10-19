@@ -27,13 +27,16 @@ static inline bool is_allowed_character(uint8_t c)
     return ::isalnum(c) || strchr(EXTRA, c) != nullptr;
 }
 
-std::string url_encode(const std::string& url)
+
+std::string url_encode(const char* begin, const char* end)
 {
     std::string result;
-    result.reserve(url.size());
+    result.reserve(std::distance(begin, end));
 
-    for (uint8_t ch : url)
+    for (auto it = begin; it != end; ++it)
     {
+        uint8_t ch = *it;
+
         if (is_allowed_character(ch))
         {
             result += ch;
@@ -47,12 +50,14 @@ std::string url_encode(const std::string& url)
     return result;
 }
 
-std::string url_decode(const std::string& url)
+std::string url_decode(const char* begin, const char* end)
 {
     std::string result;
-    result.reserve(url.size());
 
-    auto len = url.size();
+    size_t len = std::distance(begin, end);
+    result.reserve(len);
+
+    auto url = begin;
     for (size_t i = 0; i < len; ++i)
     {
         auto current_char = url[i];
@@ -80,6 +85,16 @@ std::string url_decode(const std::string& url)
     }
 
     return result;
+}
+
+std::string url_encode(const std::string& url)
+{
+    return url_encode(url.data(), url.data() + url.size());
+}
+
+std::string url_decode(const std::string& url)
+{
+    return url_decode(url.data(), url.data() + url.size());
 }
 
 } // namespace http
