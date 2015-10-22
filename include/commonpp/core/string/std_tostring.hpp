@@ -15,7 +15,7 @@
 
 namespace std
 {
-const string& to_string(const string& str)
+inline const string& to_string(const string& str)
 {
     return str;
 }
