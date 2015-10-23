@@ -147,6 +147,11 @@ set(COMMON_LIBRARIES
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
+if (UNIX AND NOT APPLE)
+    set (COMMON_LIBRARIES ${COMMON_LIBRARIES} rt)
+endif()
+
+
 if (${BUILD_EXAMPLES})
     add_subdirectory(examples/)
 endif()
