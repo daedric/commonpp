@@ -47,7 +47,7 @@ private:
 
 private:
     boost::variant<std::vector<char>, std::string> buffer_;
-    int code_;
+    int code_ = 200;
     StringRef message_;
     Headers headers_;
 };
