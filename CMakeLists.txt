@@ -130,7 +130,7 @@ find_package(Boost 1.54.0
         system
     REQUIRED)
 
-include_directories(${Boost_include_DIR})
+include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
 include_directories(include/)
