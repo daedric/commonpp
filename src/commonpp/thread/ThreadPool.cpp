@@ -51,9 +51,10 @@ ThreadPool::ThreadPool(size_t nb_thread, std::string name, size_t nb_services)
 
     services_.reserve(nb_services);
     works_.reserve(nb_services);
-    std::generate_n(std::back_inserter(services_), nb_services, []
+    const std::size_t concurrency_hint = nb_thread / nb_services;
+    std::generate_n(std::back_inserter(services_), nb_services, [concurrency_hint]
                     {
-                        return std::make_shared<boost::asio::io_service>();
+                        return std::make_shared<boost::asio::io_service>(concurrency_hint);
                     });
    }
 
