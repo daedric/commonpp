@@ -39,9 +39,11 @@ bool Core::bind(std::thread& thread)
         auto error = errno;
         LOG(thread_logger, warning) << "Error setting thread affinity: "
                                     << strerror(error);
+        hwloc_bitmap_free(cpuset);
         return false;
     }
 
+    hwloc_bitmap_free(cpuset);
     return true;
 }
 
@@ -55,9 +57,11 @@ bool Core::bind()
         auto error = errno;
         LOG(thread_logger, warning) << "Error setting thread affinity: "
                                     << strerror(error);
+        hwloc_bitmap_free(cpuset);
         return false;
     }
 
+    hwloc_bitmap_free(cpuset);
     return true;
 }
 
