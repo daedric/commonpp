@@ -18,6 +18,7 @@
 #cmakedefine HAVE_SYSLOG 1
 #cmakedefine HAVE_THREAD_LOCAL_SPECIFIER 1
 #cmakedefine HAVE_SYS_PRCTL_H 1
+#cmakedefine HAVE_HWLOC 1
 
 #define COMMONPP_VERSION "@commonpp_VERSION@"
 #define COMMONPP_MAJOR @commonpp_MAJOR@

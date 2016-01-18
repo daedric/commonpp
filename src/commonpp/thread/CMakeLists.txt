@@ -7,6 +7,9 @@
 #
 # Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
 #
+
+add_subdirectory(detail)
+
 add_commonpp_library_source(
     SOURCES
         Thread.cpp

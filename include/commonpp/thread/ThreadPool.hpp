@@ -58,6 +58,13 @@ public:
         CURRENT_SERVICE = -3,
     };
 
+    enum class ThreadDispatchPolicy
+    {
+        Random,
+        DispatchToPCore,
+        DispatchToAllCore,
+    };
+
     template <typename Callable>
     void post(Callable&& callable, int service_id = ROUND_ROBIN)
     {
@@ -73,7 +80,8 @@ public:
     bool runningInPool() const noexcept;
     boost::asio::io_service& getCurrentIOService();
 
-    void start(ThreadInit fct = ThreadInit());
+    void start(ThreadInit fct = ThreadInit(),
+               ThreadDispatchPolicy policy = ThreadDispatchPolicy::Random);
     void stop();
 
     boost::asio::io_service& getService(int service_id = ROUND_ROBIN);

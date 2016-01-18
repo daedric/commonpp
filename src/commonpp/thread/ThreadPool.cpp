@@ -13,15 +13,57 @@
 #include <atomic>
 #include <functional>
 
+#include <commonpp/core/config.hpp>
+#include "detail/logger.hpp"
 #include "commonpp/core/LoggingInterface.hpp"
 #include "commonpp/core/Utils.hpp"
+
+#if HAVE_HWLOC == 1
+# include <hwloc.h>
+# include "detail/Cores.hpp"
+#endif
 
 namespace commonpp
 {
 namespace thread
 {
 
-CREATE_LOGGER(thread_logger, "commonpp::thread");
+DECLARE_LOGGER(thread_logger, "commonpp::thread");
+
+namespace detail
+{
+template <ThreadPool::ThreadDispatchPolicy T>
+struct ThreadDispatcher
+{
+    void set_affinity(std::thread&){}
+};
+
+#if HAVE_HWLOC == 1
+template <>
+struct ThreadDispatcher<ThreadPool::ThreadDispatchPolicy::DispatchToPCore>
+{
+    void set_affinity(std::thread& thread)
+    {
+        cores[current_core++ % cores.cores()].bind(thread);
+    }
+
+    detail::Cores cores{detail::Cores::PHYSICAL};
+    int current_core = 0;
+};
+template <>
+struct ThreadDispatcher<ThreadPool::ThreadDispatchPolicy::DispatchToAllCore>
+{
+    void set_affinity(std::thread& thread)
+    {
+        cores[current_core++ % cores.cores()].bind(thread);
+    }
+
+    detail::Cores cores{detail::Cores::ALL};
+    int current_core = 0;
+};
+#endif
+
+} // namespace detail
 
 ThreadPool::ThreadPool(size_t nb_thread, std::string name, size_t nb_services)
 : nb_thread_(nb_thread)
@@ -96,11 +138,42 @@ ThreadPool::ThreadPool(ThreadPool&& pool)
     pool.running_ = false;
 }
 
-void ThreadPool::start(ThreadInit fct)
+void ThreadPool::start(ThreadInit fct, ThreadDispatchPolicy policy)
 {
     if (running_)
     {
         return;
+    }
+
+    std::function<void(std::thread&)> binder;
+    { // Setup the policy which will bind the thread to specific core.
+        using RandomDispatcher =
+            detail::ThreadDispatcher<ThreadPool::ThreadDispatchPolicy::Random>;
+        using ToPCoreDispatcher =
+            detail::ThreadDispatcher<ThreadPool::ThreadDispatchPolicy::DispatchToPCore>;
+        using ToAllCoreDispatcher =
+            detail::ThreadDispatcher<ThreadPool::ThreadDispatchPolicy::DispatchToAllCore>;
+
+        switch (policy)
+        {
+            default:
+                LOG(thread_logger, warning)
+                    << "Unknown thread dispatch policy: " << enum_to_number(policy);
+                binder = [](std::thread&) {};
+                break;
+        case ThreadDispatchPolicy::Random:
+            binder = std::bind(&RandomDispatcher::set_affinity,
+                               RandomDispatcher{}, std::placeholders::_1);
+            break;
+        case ThreadDispatchPolicy::DispatchToPCore:
+            binder = std::bind(&ToPCoreDispatcher::set_affinity,
+                               ToPCoreDispatcher{}, std::placeholders::_1);
+            break;
+        case ThreadDispatchPolicy::DispatchToAllCore:
+            binder = std::bind(&ToAllCoreDispatcher::set_affinity,
+                               ToAllCoreDispatcher{}, std::placeholders::_1);
+            break;
+        }
     }
 
     int i = 0;
@@ -134,6 +207,8 @@ void ThreadPool::start(ThreadInit fct)
                     fct();
                 }
             });
+
+        binder(threads_.back());
     }
 
     while (running_threads_ != nb_thread_)

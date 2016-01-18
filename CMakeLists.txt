@@ -106,6 +106,11 @@ find_package(Threads REQUIRED)
 find_package(TBB REQUIRED)
 include_directories(${TBB_include_DIRS})
 
+find_package(HWLOC)
+if (HWLOC_FOUND)
+    set(HAVE_HWLOC 1)
+endif()
+
 #Boost
 if (${BUILD_SHARED_LIBS})
     set(Boost_USE_STATIC_LIBS    OFF)
@@ -117,7 +122,7 @@ endif()
 set(Boost_USE_MULTITHREADED  ON)
 
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
-    SET(HAVE_SYSLOG 1)
+    set(HAVE_SYSLOG 1)
 endif()
 
 find_package(Boost 1.54.0
@@ -150,6 +155,11 @@ set(COMMON_LIBRARIES
 if (UNIX AND NOT APPLE)
     set (COMMON_LIBRARIES ${COMMON_LIBRARIES} rt)
 endif()
+
+if (${HAVE_HWLOC})
+    set (COMMON_LIBRARIES ${COMMON_LIBRARIES} ${HWLOC_LIBRARY})
+endif()
+
 
 
 if (${BUILD_EXAMPLES})

@@ -12,6 +12,10 @@
 
 #include "commonpp/core/config.hpp"
 
+#if HAVE_HWLOC == 1
+# include "detail/Cores.hpp"
+#endif
+
 #if HAVE_SYS_PRCTL_H
 # include <sys/prctl.h>
 # include <cerrno>
@@ -79,5 +83,65 @@ const std::string& get_current_thread_name()
 
     return get_current_thread_name();
 }
+
+#if HAVE_HWLOC == 1
+int get_nb_physical_core()
+{
+    return detail::Cores(detail::Cores::PHYSICAL).cores();
+}
+
+int get_nb_logical_core()
+{
+    return detail::Cores(detail::Cores::ALL).cores();
+}
+
+bool set_affinity_to_physical_core(int core)
+{
+    return detail::Cores(detail::Cores::PHYSICAL)[core].bind();
+}
+
+bool set_affinity_to_logical_core(int core)
+{
+    return detail::Cores(detail::Cores::PHYSICAL)[core].bind();
+}
+
+bool set_affinity_to_physical_core(int core, std::thread& th)
+{
+    return detail::Cores(detail::Cores::PHYSICAL)[core].bind(th);
+}
+
+bool set_affinity_to_logical_core(int core, std::thread& th)
+{
+    return detail::Cores(detail::Cores::PHYSICAL)[core].bind(th);
+}
+#else
+int get_nb_physical_core()
+{
+    return -1;
+}
+int get_nb_logical_core()
+{
+    return -1;
+}
+
+bool set_affinity_to_physical_core(int core)
+{
+    return false;
+}
+bool set_affinity_to_logical_core(int core)
+{
+    return false;
+}
+bool set_affinity_to_physical_core(int core, std::thread&)
+{
+    return false;
+}
+bool set_affinity_to_logical_core(int core, std::thread&)
+{
+    return false
+}
+
+#endif
+
 } // namespace thread
 } // namespace httpp
