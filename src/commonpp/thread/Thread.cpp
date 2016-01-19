@@ -119,6 +119,7 @@ int get_nb_physical_core()
 {
     return -1;
 }
+
 int get_nb_logical_core()
 {
     return -1;
@@ -128,19 +129,21 @@ bool set_affinity_to_physical_core(int core)
 {
     return false;
 }
+
 bool set_affinity_to_logical_core(int core)
 {
     return false;
 }
+
 bool set_affinity_to_physical_core(int core, std::thread&)
 {
     return false;
 }
+
 bool set_affinity_to_logical_core(int core, std::thread&)
 {
-    return false
+    return false;
 }
-
 #endif
 
 } // namespace thread
