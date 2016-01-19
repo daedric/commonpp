@@ -102,7 +102,7 @@ bool set_affinity_to_physical_core(int core)
 
 bool set_affinity_to_logical_core(int core)
 {
-    return detail::Cores(detail::Cores::PHYSICAL)[core].bind();
+    return detail::Cores(detail::Cores::ALL)[core].bind();
 }
 
 bool set_affinity_to_physical_core(int core, std::thread& th)
@@ -112,7 +112,7 @@ bool set_affinity_to_physical_core(int core, std::thread& th)
 
 bool set_affinity_to_logical_core(int core, std::thread& th)
 {
-    return detail::Cores(detail::Cores::PHYSICAL)[core].bind(th);
+    return detail::Cores(detail::Cores::ALL)[core].bind(th);
 }
 #else
 int get_nb_physical_core()
