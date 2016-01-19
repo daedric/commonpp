@@ -8,7 +8,7 @@
  * Copyright (c) 2016 Thomas Sanchez.  All rights reserved.
  *
  */
-
+#pragma once
 #include <hwloc.h>
 #include <thread>
 
