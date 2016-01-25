@@ -123,6 +123,8 @@ FWD_DECLARE_LOGGER(global_logger, BasicLogger);
 
 #define LOG(l, s) BOOST_LOG_SEV(l, ::commonpp::s)
 #define GLOG(sev) LOG(::commonpp::core::global_logger, sev)
+#define TRACE(sev) ENABLE_CURRENT_FCT_LOGGING(); GLOG(sev)
+#define TRACE_LOG(l, sev) ENABLE_CURRENT_FCT_LOGGING(); LOG(l, sev)
 
 // clang-format off
 #ifndef NDEBUG
