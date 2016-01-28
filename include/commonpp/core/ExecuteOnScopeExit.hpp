@@ -15,13 +15,16 @@ namespace commonpp
 {
 
 // compared to the boost one, this one can be cancelled.
-template <typename Callable>
 struct ExecuteOnScopeExit final
 {
+    template <typename Callable>
     ExecuteOnScopeExit(Callable&& cb)
     : fn(std::forward<Callable>(cb))
     {
     }
+
+    ExecuteOnScopeExit(const ExecuteOnScopeExit&) = delete;
+    ExecuteOnScopeExit& operator=(const ExecuteOnScopeExit&) = delete;
 
     ~ExecuteOnScopeExit()
     {
@@ -36,14 +39,8 @@ struct ExecuteOnScopeExit final
         cancelled = true;
     }
 
-    Callable fn;
+    std::function<void()> fn;
     bool cancelled = false;
 };
-
-template <typename Callable>
-ExecuteOnScopeExit<Callable> execute_on_scope_exit(Callable&& callable)
-{
-    return {std::forward<Callable>(callable)};
-}
 
 } // namespace commonpp
