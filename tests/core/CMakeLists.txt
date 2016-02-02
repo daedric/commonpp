@@ -13,3 +13,8 @@ subdirlist(subdirs ${CMAKE_CURRENT_SOURCE_DIR})
 foreach(subdir ${subdirs})
     add_subdirectory(${subdir})
 endforeach()
+
+
+set(MODULE "core")
+add_definitions("-DBOOST_TEST_MODULE=${MODULE}")
+ADD_COMMONPP_TEST(options)

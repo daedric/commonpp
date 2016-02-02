@@ -47,6 +47,8 @@ The core part is mostly utility functions or class.
   should not be called).
 * `RandomValuePicker`: select a random value in a read only container;
 * `FloatingArithmeticTools`: Knuth's double comparison functions;
+* `Options`: an utility class working along with an enum to offer a simple
+  interface to manage options, see [the test](tests/core/options.cpp);
 * There are several string functions to stringify, encode, join, or get a
   formatted date.
 
