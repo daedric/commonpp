@@ -12,9 +12,9 @@
 
 #include <iosfwd>
 #include <type_traits>
+#include <commonpp/core/config.hpp>
 #include <commonpp/core/Utils.hpp>
 
-#include <boost/config.hpp>
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>

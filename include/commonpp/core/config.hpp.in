@@ -51,3 +51,7 @@ UNUSED_ATTR static const std::string& commonpp_version()
 # define BOOST_UNLIKELY(x) (x)
 #endif
 
+#ifndef BOOST_CXX14_CONSTEXPR
+# define BOOST_CXX14_CONSTEXPR
+#endif
+
