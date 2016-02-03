@@ -15,6 +15,19 @@
 #include <commonpp/core/config.hpp>
 #include <commonpp/core/Utils.hpp>
 
+#if BOOST_CLANG == 1 && BOOST_MAJOR == 1 && BOOST_MAJOR <= 55
+# if defined(BOOST_PP_VARIADICS)
+#  if !BOOST_PP_VARIADICS
+#   warning BOOST_PP_VARIADICS cannot be defined as 0, redefining it to 1a
+#   undef BOOST_PP_VARIADICS
+#   define BOOST_PP_VARIADICS 1
+#  endif
+# else
+#  define BOOST_PP_VARIADICS 1
+# endif
+#endif
+
+
 #include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
