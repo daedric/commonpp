@@ -41,6 +41,16 @@ struct NsStringify // Argument-dependent name lookup
     }
 };
 
+struct MemFnStringify
+{
+    template <typename U>
+    static auto stringify(U&& value)
+        -> decltype(value.to_string())
+    {
+        return value.to_string();
+    }
+};
+
 struct BoostStringify
 {
     template <typename U>
@@ -55,9 +65,12 @@ template <typename T,
           typename Base = typename traits::conditional<
               traits::has_std_to_string<T>,
               StdStringify,
-              typename traits::conditional<traits::has_to_string<T>,
-                                           NsStringify,
-                                           BoostStringify>::type>::type>
+              typename traits::conditional<
+                  traits::has_to_string<T>,
+                  NsStringify,
+                  typename traits::conditional<traits::has_to_string_memfn<T>,
+                                               MemFnStringify,
+                                               BoostStringify>::type>::type>::type>
 struct ToString : Base
 {
 };

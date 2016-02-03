@@ -48,6 +48,21 @@ static constexpr bool has_to_string(long)
 {
     return false;
 }
+
+template <typename Type>
+static constexpr auto has_to_string_memfn(int)
+    -> decltype(std::declval<Type>().to_string(), true)
+{
+    return true;
+}
+
+template <typename Type>
+static constexpr bool has_to_string_memfn(long)
+{
+    return false;
+}
+
+
 } // namespace detail
 
 template <typename T>
@@ -58,6 +73,11 @@ struct has_std_to_string
 template <typename T>
 struct has_to_string
     : conditional_c_t<detail::has_to_string<T>(0), std::true_type, std::false_type>
+{};
+
+template <typename T>
+struct has_to_string_memfn
+    : conditional_c_t<detail::has_to_string_memfn<T>(0), std::true_type, std::false_type>
 {};
 
 } // namespace traits
