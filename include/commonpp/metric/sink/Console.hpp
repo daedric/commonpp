@@ -1,5 +1,5 @@
 /*
- * File: include/commonpp/metric/sink/ConsoleSink.hpp
+ * File: include/commonpp/metric/sink/Console.hpp
  * Part of commonpp.
  *
  * Distributed under the 2-clause BSD licence (See LICENCE.TXT file at the
@@ -19,11 +19,11 @@ namespace metric
 namespace sink
 {
 
-class ConsoleSink
+class Console
 {
 public:
-    ConsoleSink() = default;
-    ~ConsoleSink() = default;
+    Console() = default;
+    ~Console() = default;
 
     void operator()(const Metrics::MetricVector& values);
 };

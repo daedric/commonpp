@@ -13,9 +13,9 @@ add_commonpp_library_source(
         MetricTag.cpp
         MetricValue.cpp
 
-        sink/GraphiteSink.cpp
-        sink/ConsoleSink.cpp
-        sink/InfluxDBSink.cpp
+        sink/Graphite.cpp
+        sink/Console.cpp
+        sink/InfluxDB.cpp
 
         type/Counter.cpp
         )

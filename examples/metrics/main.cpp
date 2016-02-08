@@ -11,28 +11,28 @@
 
 #include <commonpp/core/Utils.hpp>
 #include <commonpp/metric/Metrics.hpp>
-#include <commonpp/metric/sink/ConsoleSink.hpp>
-#include <commonpp/metric/sink/GraphiteSink.hpp>
-#include <commonpp/metric/sink/InfluxDBSink.hpp>
+#include <commonpp/metric/sink/Console.hpp>
+#include <commonpp/metric/sink/Graphite.hpp>
+#include <commonpp/metric/sink/InfluxDB.hpp>
 #include <commonpp/metric/type/TimeScope.hpp>
-#include <commonpp/metric/reservoir/ExponentiallyDecayingReservoir.hpp>
+#include <commonpp/metric/reservoir/ExponentiallyDecaying.hpp>
 #include "commonpp/core/LoggingInterface.hpp"
 
 using commonpp::metric::Metrics;
 using commonpp::metric::MetricTag;
 using commonpp::metric::MetricValue;
-using commonpp::metric::sink::ConsoleSink;
-using commonpp::metric::sink::GraphiteSink;
-using commonpp::metric::sink::InfluxDBSink;
+using commonpp::metric::sink::Console;
+using commonpp::metric::sink::Graphite;
+using commonpp::metric::sink::InfluxDB;
 using commonpp::thread::ThreadPool;
 
-using commonpp::metric::reservoir::ExponentiallyDecayingReservoir;
+using commonpp::metric::reservoir::ExponentiallyDecaying;
 
 using Counter = Metrics::Counter;
 using DescStat = Metrics::DescStat;
 using Gauge = Metrics::Gauge;
 using TimeScope =
-    commonpp::metric::type::TimeScope<ExponentiallyDecayingReservoir<>,
+    commonpp::metric::type::TimeScope<ExponentiallyDecaying<>,
                                       std::chrono::seconds>;
 
 int main(int, char *[])
@@ -51,9 +51,9 @@ int main(int, char *[])
     MetricTag prefix;
     prefix += {"thisisa", "test"};
 
-    ConsoleSink sink;
-    GraphiteSink gsink(pool.getService(), prefix, "localhost", "2003");
-    InfluxDBSink isink(pool.getService(), prefix, "commonpp_example",
+    Console sink;
+    Graphite gsink(pool.getService(), prefix, "localhost", "2003");
+    InfluxDB isink(pool.getService(), prefix, "commonpp_example",
                        "localhost", "8086");
     metrics.addMetricsReceiver(std::ref(sink));
     metrics.addMetricsReceiver(std::ref(gsink));
@@ -77,8 +77,8 @@ int main(int, char *[])
                                      },
                                      "gauge"));
 
-    ExponentiallyDecayingReservoir<> reservoir;
-    ExponentiallyDecayingReservoir<> timer_reservoir;
+    ExponentiallyDecaying<> reservoir;
+    ExponentiallyDecaying<> timer_reservoir;
     metrics.add<DescStat>(parent("reservoir"), reservoir);
     metrics.add<DescStat>(parent("timer"), timer_reservoir);
 

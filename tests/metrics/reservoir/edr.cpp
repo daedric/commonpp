@@ -9,10 +9,10 @@
  *
  */
 
-#include <iostream>
 #include <boost/test/unit_test.hpp>
+#include <iostream>
 
-#include <commonpp/metric/reservoir/ExponentiallyDecayingReservoir.hpp>
+#include <commonpp/metric/reservoir/ExponentiallyDecaying.hpp>
 #include <commonpp/metric/type/DescStat.hpp>
 
 namespace reservoir = commonpp::metric::reservoir;
@@ -83,8 +83,8 @@ static std::vector<double> extract_values(R& r)
 }
 
 template <size_t s, size_t a>
-using ExponentiallyDecayingReservoir =
-    commonpp::metric::reservoir::ExponentiallyDecayingReservoir<s, a, Clock>;
+using ExponentiallyDecaying =
+    commonpp::metric::reservoir::ExponentiallyDecaying<s, a, Clock>;
 
 using commonpp::metric::type::DescStat;
 
@@ -92,8 +92,8 @@ BOOST_AUTO_TEST_CASE(reservoir_1000_out_of_1000)
 {
     ResetClock raii_reset;
 
-    ::commonpp::metric::reservoir::ExponentiallyDecayingReservoir<
-        100, 99, std::chrono::system_clock> reservoir;
+    ::commonpp::metric::reservoir::ExponentiallyDecaying<100, 99, std::chrono::system_clock>
+        reservoir;
 
     for (int i = 0; i < 1000; ++i)
     {
@@ -112,8 +112,8 @@ BOOST_AUTO_TEST_CASE(reservoir_1000_out_of_10)
 {
     ResetClock raii_reset;
 
-    ::commonpp::metric::reservoir::ExponentiallyDecayingReservoir<
-        100, 99, std::chrono::system_clock> reservoir;
+    ::commonpp::metric::reservoir::ExponentiallyDecaying<100, 99, std::chrono::system_clock>
+        reservoir;
 
     for (int i = 0; i < 10; ++i)
     {
@@ -132,8 +132,8 @@ BOOST_AUTO_TEST_CASE(heavily_biased_reservoir_1000_out_of_1000)
 {
     ResetClock raii_reset;
 
-    ::commonpp::metric::reservoir::ExponentiallyDecayingReservoir<
-        1000, 1, std::chrono::system_clock> reservoir;
+    ::commonpp::metric::reservoir::ExponentiallyDecaying<1000, 1, std::chrono::system_clock>
+        reservoir;
 
     for (int i = 0; i < 100; ++i)
     {
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(long_period_of_inactivity_should_not_corrupt_sampling_rate)
 {
     ResetClock raii_reset;
 
-    ExponentiallyDecayingReservoir<10, 15> reservoir;
+    ExponentiallyDecaying<10, 15> reservoir;
 
     for (int i = 0; i < 1000; ++i)
     {
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(long_period_of_inactivity_should_not_corrupt_sampling_rate)
 BOOST_AUTO_TEST_CASE(spot_lift)
 {
     ResetClock raii_reset;
-    ExponentiallyDecayingReservoir<1000, 15> reservoir;
+    ExponentiallyDecaying<1000, 15> reservoir;
 
     const int rate_per_min = 10;
 
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(spot_lift)
 BOOST_AUTO_TEST_CASE(spot_fall)
 {
     ResetClock raii_reset;
-    ExponentiallyDecayingReservoir<1000, 15> reservoir;
+    ExponentiallyDecaying<1000, 15> reservoir;
 
     const int rate_per_min = 10;
 
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(spot_fall)
 BOOST_AUTO_TEST_CASE(quantilies_should_be_based_on_weights)
 {
     ResetClock raii_reset;
-    ExponentiallyDecayingReservoir<1000, 15> reservoir;
+    ExponentiallyDecaying<1000, 15> reservoir;
 
     for (int i = 0; i < 40; ++i)
     {

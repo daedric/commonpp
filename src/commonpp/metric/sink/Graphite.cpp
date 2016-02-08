@@ -1,5 +1,5 @@
 /*
- * File: GraphiteSink.cpp
+ * File: Graphite.cpp
  * Part of commonpp.
  *
  * Distributed under the 2-clause BSD licence (See LICENCE.TXT file at the
@@ -8,7 +8,7 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
-#include "commonpp/metric/sink/GraphiteSink.hpp"
+#include "commonpp/metric/sink/Graphite.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -67,10 +67,10 @@ struct Connection
     boost::asio::ip::tcp::socket socket;
 };
 
-GraphiteSink::GraphiteSink(boost::asio::io_service& service,
-                           MetricTag prefix,
-                           std::string host,
-                           std::string port)
+Graphite::Graphite(boost::asio::io_service& service,
+                   MetricTag prefix,
+                   std::string host,
+                   std::string port)
 : io_service_(service)
 , prefix_(std::move(prefix))
 , host_(std::move(host))
@@ -79,11 +79,11 @@ GraphiteSink::GraphiteSink(boost::asio::io_service& service,
 {
 }
 
-GraphiteSink::~GraphiteSink()
+Graphite::~Graphite()
 {
 }
 
-void GraphiteSink::operator()(const Metrics::MetricVector& values)
+void Graphite::operator()(const Metrics::MetricVector& values)
 {
     if (!connection_)
     {

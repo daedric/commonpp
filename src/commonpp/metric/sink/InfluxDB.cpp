@@ -1,5 +1,5 @@
 /*
- * File: src/commonpp/metric/sink/InfluxDBSink.cpp
+ * File: src/commonpp/metric/sink/InfluxDB.cpp
  * Part of commonpp.
  *
  * Distributed under the 2-clause BSD licence (See LICENCE.TXT file at the
@@ -8,7 +8,7 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
-#include "commonpp/metric/sink/InfluxDBSink.hpp"
+#include "commonpp/metric/sink/InfluxDB.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -68,11 +68,11 @@ struct Connection
     boost::asio::ip::tcp::socket socket;
 };
 
-InfluxDBSink::InfluxDBSink(boost::asio::io_service& service,
-                           MetricTag prefix,
-                           std::string db,
-                           std::string host,
-                           std::string port)
+InfluxDB::InfluxDB(boost::asio::io_service& service,
+                   MetricTag prefix,
+                   std::string db,
+                   std::string host,
+                   std::string port)
 : io_service_(service)
 , prefix_(std::move(prefix))
 , host_(std::move(host))
@@ -86,11 +86,11 @@ InfluxDBSink::InfluxDBSink(boost::asio::io_service& service,
     request_.headers() += std::make_pair("Host", host_ + ":" + port_);
 }
 
-InfluxDBSink::~InfluxDBSink()
+InfluxDB::~InfluxDB()
 {
 }
 
-void InfluxDBSink::operator()(const Metrics::MetricVector& values)
+void InfluxDB::operator()(const Metrics::MetricVector& values)
 {
     if (!connection_)
     {

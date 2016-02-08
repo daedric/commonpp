@@ -1,5 +1,5 @@
 /*
- * File: ExponentiallyDecayingReservoir.hpp
+ * File: ExponentiallyDecaying.hpp
  * Part of commonpp.
  *
  * Distributed under the 2-clause BSD licence (See LICENCE.TXT file at the
@@ -35,7 +35,7 @@ template <size_t size_ = 1028,
           size_t alpha_time_1000 = 15,
           typename clock_ = std::chrono::system_clock,
           typename Mutex = std::mutex>
-class ExponentiallyDecayingReservoir
+class ExponentiallyDecaying
 {
 
     template <typename K, typename V>
@@ -61,8 +61,8 @@ public:
     const std::chrono::hours RESCALE_INTERVAL{1};
 
 public:
-    ExponentiallyDecayingReservoir();
-    ~ExponentiallyDecayingReservoir() = default;
+    ExponentiallyDecaying();
+    ~ExponentiallyDecaying() = default;
 
     void pushValue(double value, Timepoint timepoint = Clock::now());
 
@@ -99,7 +99,7 @@ private:
 };
 
 template <size_t s, size_t a, typename c, typename m>
-ExponentiallyDecayingReservoir<s, a, c, m>::ExponentiallyDecayingReservoir()
+ExponentiallyDecaying<s, a, c, m>::ExponentiallyDecaying()
 : gen_(random_())
 , dis_(0, 1)
 {
@@ -108,28 +108,27 @@ ExponentiallyDecayingReservoir<s, a, c, m>::ExponentiallyDecayingReservoir()
 }
 
 template <size_t s, size_t a, typename c, typename m>
-typename ExponentiallyDecayingReservoir<s, a, c, m>::Weight
-ExponentiallyDecayingReservoir<s, a, c, m>::weight(ElapsedTimeUnit duration)
+typename ExponentiallyDecaying<s, a, c, m>::Weight
+ExponentiallyDecaying<s, a, c, m>::weight(ElapsedTimeUnit duration)
 {
     return ::exp(ALPHA * duration.count());
 }
 
 template <size_t s, size_t a, typename c, typename m>
-size_t ExponentiallyDecayingReservoir<s, a, c, m>::size() const
+size_t ExponentiallyDecaying<s, a, c, m>::size() const
 {
     std::lock_guard<m> lock(mutex_);
     return values_.size();
 }
 
 template <size_t s, size_t a, typename c, typename m>
-size_t ExponentiallyDecayingReservoir<s, a, c, m>::size_unsafe() const
+size_t ExponentiallyDecaying<s, a, c, m>::size_unsafe() const
 {
     return values_.size();
 }
 
 template <size_t s, size_t a, typename c, typename m>
-void ExponentiallyDecayingReservoir<s, a, c, m>::pushValue(double value,
-                                                           Timepoint timestamp)
+void ExponentiallyDecaying<s, a, c, m>::pushValue(double value, Timepoint timestamp)
 {
     std::lock_guard<m> lock(mutex_);
     rescale();
@@ -155,7 +154,7 @@ void ExponentiallyDecayingReservoir<s, a, c, m>::pushValue(double value,
 }
 
 template <size_t s, size_t a, typename c, typename m>
-void ExponentiallyDecayingReservoir<s, a, c, m>::rescale()
+void ExponentiallyDecaying<s, a, c, m>::rescale()
 {
     Timepoint now = Clock::now();
 

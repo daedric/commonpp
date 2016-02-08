@@ -1,5 +1,5 @@
 /*
- * File: include/commonpp/metric/sink/InfluxDBSink.hpp
+ * File: Graphite.hpp
  * Part of commonpp.
  *
  * Distributed under the 2-clause BSD licence (See LICENCE.TXT file at the
@@ -20,7 +20,6 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <commonpp/metric/detail/types.hpp>
 #include <commonpp/metric/Metrics.hpp>
-#include <commonpp/net/http/Request.hpp>
 
 namespace commonpp
 {
@@ -30,16 +29,15 @@ namespace sink
 {
 struct Connection;
 
-class InfluxDBSink
+class Graphite
 {
 public:
-    InfluxDBSink(boost::asio::io_service& service,
-                 MetricTag prefix,
-                 std::string db,
-                 std::string host,
-                 std::string port);
+    Graphite(boost::asio::io_service& service,
+             MetricTag prefix,
+             std::string host,
+             std::string port);
 
-    ~InfluxDBSink();
+    ~Graphite();
 
     void operator()(const Metrics::MetricVector& values);
 
@@ -48,9 +46,6 @@ private:
     const MetricTag prefix_;
     std::string host_;
     std::string port_;
-    std::string db_;
-
-    net::http::Request request_;
 
     std::unique_ptr<Connection> connection_;
 };
