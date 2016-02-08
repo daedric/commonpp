@@ -43,7 +43,11 @@ public:
     size_t cores() const;
 
 private:
-    hwloc_topology_t topology_;
+    void get_cores();
+
+private:
+    Options opt_ = PHYSICAL;
+    hwloc_topology_t topology_ = nullptr;
     size_t nb_cores_;
 
     std::vector<Core> cores_;
