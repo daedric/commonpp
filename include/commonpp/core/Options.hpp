@@ -78,6 +78,16 @@ struct Options
         return (flag & enum_to_number(f)) != 0;
     }
 
+    bool empty() const
+    {
+        return flag == 0;
+    }
+
+    void unsafe_set_flag(Underlying u)
+    {
+        flag = u;
+    }
+
 private:
     static constexpr Underlying set()
     {
