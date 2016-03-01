@@ -67,6 +67,16 @@ void Metrics::schedule_timer()
         pool_.schedule(period_, std::bind(&Metrics::calculate_metrics, this));
 }
 
+void Metrics::removeAll(const MetricTag& prefix)
+{
+    std::lock_guard<std::mutex> lock(counters_lock_);
+    counters_.erase(std::remove_if(counters_.begin(), counters_.end(),
+                                   [&prefix](const Generator& generator) {
+                                       return prefix.isPrefixOf(generator.first);
+                                   }),
+                    counters_.end());
+}
+
 void Metrics::calculate_metrics()
 {
     std::lock_guard<std::mutex> lock(counters_lock_);

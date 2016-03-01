@@ -77,6 +77,8 @@ public:
         return pool_;
     }
 
+    void removeAll(const MetricTag& prefix);
+
 private:
     void schedule_timer();
     void calculate_metrics();

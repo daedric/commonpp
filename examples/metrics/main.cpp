@@ -43,7 +43,7 @@ int main(int, char *[])
 
     DGLOG(warning) << "Hello world";
 
-    ThreadPool pool(10, "", 5);
+    ThreadPool pool(1);
     pool.start();
 
     Metrics metrics(pool, std::chrono::seconds(1));
@@ -59,7 +59,7 @@ int main(int, char *[])
     metrics.addMetricsReceiver(std::ref(gsink));
     metrics.addMetricsReceiver(std::ref(isink));
 
-    MetricTag parent;
+    MetricTag parent("measurement-name");
     parent += {"env", "dev"};
     parent += {"host", commonpp::get_hostname()};
 
@@ -87,6 +87,12 @@ int main(int, char *[])
         TimeScope scope(timer_reservoir);
         reservoir.pushValue(i);
         ++i;
+
+        if (i == 10)
+        {
+            metrics.removeAll(parent("timer"));
+        }
+
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 

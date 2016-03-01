@@ -44,6 +44,8 @@ public:
     MetricTag create(std::string measure_name) const;
     MetricTag operator()(std::string measure_name) const;
 
+    bool isPrefixOf(const MetricTag& tag) const;
+
 private:
     std::string name_;
     std::vector<std::pair<std::string, std::string>> tags_;

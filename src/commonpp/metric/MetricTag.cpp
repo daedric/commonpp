@@ -26,7 +26,14 @@ MetricTag::MetricTag(std::string name)
 MetricTag MetricTag::create(std::string measure_name) const
 {
     MetricTag tmp = *this;
-    tmp.name_ = move(measure_name);
+    if (not tmp.name_.empty())
+    {
+        tmp.name_ += "." + measure_name;
+    }
+    else
+    {
+        tmp.name_ = move(measure_name);
+    }
     return tmp;
 }
 
@@ -82,7 +89,14 @@ MetricTag MetricTag::operator+(const MetricTag& rhs) const
     MetricTag result = *this;
     result.tags_.insert(std::end(result.tags_), std::begin(rhs.tags_),
                         std::end(rhs.tags_));
-    result.name_ = rhs.name_;
+    if (not result.name_.empty())
+    {
+        result.name_ += "." + rhs.name_;
+    }
+    else
+    {
+        result.name_ = rhs.name_;
+    }
 
     return result;
 }
@@ -128,12 +142,23 @@ const std::string& MetricTag::toGraphiteFormat(const std::string& prefix) const
         graphite_ += sanitize_graphite(tag.second) + ".";
     }
 
-    if (not name_.empty())
+    if (not name_.empty()) // We want to keep the dots
     {
-        graphite_ += sanitize_graphite(name_);
+        graphite_ += name_;
     }
 
     return graphite_;
+}
+
+bool MetricTag::isPrefixOf(const MetricTag& tag) const
+{
+    if (tags_.size() > tag.tags_.size())
+    {
+        return false;
+    }
+
+    return std::equal(tags_.begin(), tags_.end(), tag.tags_.begin()) &&
+           (name_.empty() || boost::starts_with(tag.name_, name_));
 }
 
 } // namespace metric
