@@ -28,9 +28,9 @@ using commonpp::thread::ThreadPool;
 
 using commonpp::metric::reservoir::ExponentiallyDecaying;
 
-using Counter = Metrics::Counter;
+using Counter = Metrics::Counter<>;
 using DescStat = Metrics::DescStat;
-using Gauge = Metrics::Gauge;
+using Gauge = Metrics::Gauge<>;
 using TimeScope =
     commonpp::metric::type::TimeScope<ExponentiallyDecaying<>,
                                       std::chrono::seconds>;

@@ -49,8 +49,13 @@ public:
     using MetricsCallback = boost::signals2::signal<void(const MetricVector&)>;
 
     using DescStat = type::DescStat;
-    using Gauge = type::Gauge<>;
-    using Counter = type::Counter<>;
+
+    template <typename T = double>
+    using Gauge = type::Gauge<T>;
+
+    template <typename T = uintmax_t>
+    using Counter = type::Counter<T>;
+
     using SharedCounter = type::SharedCounter;
 
 public:
@@ -59,10 +64,26 @@ public:
 
     template <typename StatsSummary, typename Reservoir>
     void add(MetricTag tag, const Reservoir& h);
-
-    void add(MetricTag tag, Gauge fn);
-    void add(MetricTag tag, Counter fn);
     void add(MetricTag tag, SharedCounter& fn);
+
+
+    template <typename T>
+    void add(MetricTag metric_tag, Gauge<T> gauge)
+    {
+        auto gauge_ptr = std::make_shared<Gauge<T>>(std::move(gauge));
+        std::lock_guard<std::mutex> lock(counters_lock_);
+        counters_.emplace_back(std::move(metric_tag),
+                               std::bind(&Gauge<T>::getMetrics, gauge_ptr));
+    }
+
+    template <typename T>
+    void add(MetricTag metric_tag, Counter<T> counter)
+    {
+        auto counter_ptr = std::make_shared<Counter<T>>(std::move(counter));
+        std::lock_guard<std::mutex> lock(counters_lock_);
+        counters_.emplace_back(std::move(metric_tag),
+                               std::bind(&Counter<T>::getMetrics, counter_ptr));
+    }
 
     void stop();
 

@@ -38,27 +38,12 @@ void Metrics::stop()
 
 void Metrics::add(MetricTag metric_tag, SharedCounter& counter)
 {
-    auto counter_ptr = std::make_shared<Metrics::Counter>(
+    auto counter_ptr = std::make_shared<Counter<>>(
         std::bind(&SharedCounter::sum, std::ref(counter)));
 
     std::lock_guard<std::mutex> lock(counters_lock_);
     counters_.emplace_back(std::move(metric_tag),
-                           std::bind(&Counter::getMetrics, counter_ptr));
-}
-
-void Metrics::add(MetricTag metric_tag, Gauge gauge)
-{
-    auto gauge_ptr = std::make_shared<Metrics::Gauge>(std::move(gauge));
-    std::lock_guard<std::mutex> lock(counters_lock_);
-    counters_.emplace_back(std::move(metric_tag), std::bind(&Gauge::getMetrics, gauge_ptr));
-}
-
-void Metrics::add(MetricTag metric_tag, Counter counter)
-{
-    auto counter_ptr = std::make_shared<Metrics::Counter>(std::move(counter));
-    std::lock_guard<std::mutex> lock(counters_lock_);
-    counters_.emplace_back(std::move(metric_tag),
-                           std::bind(&Counter::getMetrics, counter_ptr));
+                           std::bind(&Counter<>::getMetrics, counter_ptr));
 }
 
 void Metrics::schedule_timer()
