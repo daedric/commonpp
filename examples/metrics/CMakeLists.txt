@@ -9,4 +9,4 @@
 #
 
 add_executable(metrics_example main.cpp)
-target_link_libraries(metrics_example ${COMMON_LIBRARIES})
+target_link_libraries(metrics_example commonpp)

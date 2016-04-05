@@ -141,26 +141,22 @@ link_directories(${Boost_LIBRARY_DIR})
 include_directories(include/)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
-add_subdirectory(include/)
-add_subdirectory(src/)
-
-set(COMMON_LIBRARIES
-    commonpp
-
+set(COMMONPP_DEPS
     ${Boost_LIBRARIES}
     ${TBB_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
 )
 
 if (UNIX AND NOT APPLE)
-    set (COMMON_LIBRARIES ${COMMON_LIBRARIES} rt)
+    set (COMMONPP_DEPS ${COMMONPP_DEPS} rt)
 endif()
 
 if (${HAVE_HWLOC})
-    set (COMMON_LIBRARIES ${COMMON_LIBRARIES} ${HWLOC_LIBRARY})
+    set (COMMONPP_DEPS ${COMMONPP_DEPS} ${HWLOC_LIBRARY})
 endif()
 
-
+add_subdirectory(include/)
+add_subdirectory(src/)
 
 if (${BUILD_EXAMPLES})
     add_subdirectory(examples/)

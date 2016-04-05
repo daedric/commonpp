@@ -34,6 +34,7 @@ add_subdirectory(metric)
 add_subdirectory(core)
 
 add_library(commonpp ${ALL_SRCS})
+target_link_libraries(commonpp ${COMMONPP_DEPS})
 generate_export_header(commonpp)
 set_property(TARGET commonpp PROPERTY VERSION ${commonpp_VERSION})
 set_property(TARGET commonpp PROPERTY SOVERSION ${commonpp_MAJOR})
