@@ -9,5 +9,5 @@
 #
 
 add_executable(shared_counter_bench  main.cpp)
-target_link_libraries(shared_counter_bench ${COMMON_LIBRARIES})
+target_link_libraries(shared_counter_bench commonpp)
 

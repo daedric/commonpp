@@ -29,7 +29,7 @@ macro(ADD_COMMONPP_TEST TEST_NAME)
         include_directories(${CMAKE_CURRENT_BINARY_DIR})
     endforeach()
 
-    set(LIBRARIES ${LIBRARY} ${COMMON_LIBRARIES})
+    set(LIBRARIES ${LIBRARY} commonpp)
     set(EXE_NAME Test_${MODULE}_${TEST_NAME})
     # current project
     include_directories(${CMAKE_SOURCE_DIR}/)
