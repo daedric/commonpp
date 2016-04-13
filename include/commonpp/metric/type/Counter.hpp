@@ -76,7 +76,7 @@ class SharedCounter
 #endif
 
 public:
-    SharedCounter();
+    SharedCounter(std::string name = "");
 
     void inc(uintmax_t = 1) const;
     void operator++() const
@@ -99,6 +99,7 @@ private:
     mutable thread::Spinlock mutex_;
 #endif
     mutable CounterType counter_;
+    const std::string name_;
 };
 
 

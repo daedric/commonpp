@@ -18,7 +18,7 @@ namespace metric
 namespace type
 {
 
-SharedCounter::SharedCounter()
+SharedCounter::SharedCounter(std::string name)
 #if SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_TBB
 : counter_([]
            {
@@ -29,6 +29,7 @@ SharedCounter::SharedCounter()
 #elif SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_ATOMIC
 : counter_(0)
 #endif
+, name_(std::move(name))
 {
 }
 

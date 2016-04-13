@@ -39,7 +39,7 @@ void Metrics::stop()
 void Metrics::add(MetricTag metric_tag, SharedCounter& counter)
 {
     auto counter_ptr = std::make_shared<Counter<>>(
-        std::bind(&SharedCounter::sum, std::ref(counter)));
+        std::bind(&SharedCounter::sum, std::ref(counter)), counter.name_);
 
     std::lock_guard<std::mutex> lock(counters_lock_);
     counters_.emplace_back(std::move(metric_tag),
