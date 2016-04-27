@@ -87,7 +87,7 @@ public:
     }
 
     template <typename Iterator>
-    Request& body(Iterator begin, Iterator end)
+    Request& bodyAppend(Iterator begin, Iterator end)
     {
         auto distance = std::distance(begin, end);
         body_.reserve(body_.size() + distance);
@@ -96,9 +96,35 @@ public:
     }
 
     template <typename T>
+    Request& bodyAppend(const T& t)
+    {
+        using std::begin;
+        using std::end;
+
+        return bodyAppend(begin(t), end(t));
+    }
+
+    Request& bodyAppend(const char *str)
+    {
+        auto begin = str;
+        auto end = str + ::strlen(str);
+        return bodyAppend(begin, end);
+    }
+
+    template <typename Iterator>
+    Request& body(Iterator begin, Iterator end)
+    {
+        body_.assign(begin, end);
+        return *this;
+    }
+
+    template <typename T>
     Request& body(const T& t)
     {
-        return body(std::begin(t), std::end(t));
+        using std::begin;
+        using std::end;
+
+        return body(begin(t), end(t));
     }
 
     Request& body(const char* str)
