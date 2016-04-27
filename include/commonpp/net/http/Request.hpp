@@ -98,7 +98,10 @@ public:
     template <typename T>
     Request& bodyAppend(const T& t)
     {
-        return bodyAppend(std::begin(t), std::end(t));
+        using std::begin;
+        using std::end;
+
+        return bodyAppend(begin(t), end(t));
     }
 
     Request& bodyAppend(const char *str)
@@ -118,7 +121,10 @@ public:
     template <typename T>
     Request& body(const T& t)
     {
-        return body(std::begin(t), std::end(t));
+        using std::begin;
+        using std::end;
+
+        return body(begin(t), end(t));
     }
 
     Request& body(const char* str)
