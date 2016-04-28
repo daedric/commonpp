@@ -91,7 +91,6 @@ public:
 
     void reset();
 
-private:
     uintmax_t sum() const;
 
 private:
