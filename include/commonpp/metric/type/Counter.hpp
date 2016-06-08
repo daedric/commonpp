@@ -20,6 +20,7 @@
 #endif
 
 #include <functional>
+#include <type_traits>
 
 #if SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_TBB
 # include <tbb/combinable.h>
@@ -51,22 +52,30 @@ struct Counter
     Counter(Callable fn, std::string name = "")
     : value_(fn)
     , name_(move(name))
+    {}
+
+    template <typename T,
+              typename = typename std::enable_if<std::is_integral<T>::value>::type>
+    Counter(T& integer, std::string name = "")
+    : value_([&integer] { return integer; })
+    , name_(move(name))
     {
-        last_time_point = Clock::now();
     }
 
-    MetricValue getMetrics();
+    MetricValue getMetrics()
+    {
+        MetricValue result;
+        result.push(value_(), name_);
+        return result;
+    }
 
 private:
     std::function<Type()> value_;
     std::string name_;
-    Type last_value = 0;
-    TimePoint last_time_point;
 };
 
 class SharedCounter
 {
-    friend class ::commonpp::metric::Metrics;
 #if SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_TBB
     using CounterType = tbb::combinable<uintmax_t>;
 #elif SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_SPINLOCK
@@ -92,6 +101,8 @@ public:
     void reset();
 
     uintmax_t sum() const;
+    const std::string& name() const noexcept
+    { return name_; }
 
 private:
 #if SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_SPINLOCK
@@ -101,45 +112,10 @@ private:
     const std::string name_;
 };
 
-
-// Counter::getMetrics impl
-template <typename T>
-MetricValue Counter<T>::getMetrics()
-{
-    MetricValue result;
-    auto now  = result.getCapturetime();
-
-    T new_value = value_();
-
-    if (new_value < last_value)
-    {
-        last_value = new_value;
-        last_time_point = now;
-        result.push(get_no_metric_marker<T>(), name_);
-        return result;
-    }
-
-    T delta_value = new_value - last_value;
-
-    double delta_time =
-        std::chrono::duration_cast<std::chrono::seconds>(now - last_time_point)
-            .count();
-
-    double counter_value;
-    if (!(essentially_equal(delta_time, double(0))))
-    {
-        counter_value = delta_value / delta_time;
-    }
-    else
-    {
-        counter_value = get_no_metric_marker<T>();
-    }
-
-    last_value = new_value;
-    last_time_point = now;
-    result.push(counter_value, name_);
-    return result;
-}
+#undef SHARED_LOCK_USE_TBB
+#undef SHARED_LOCK_USE_ATOMIC
+#undef SHARED_LOCK_USE_SPINLOCK
+#undef SHARED_COUNTER_BACKEND
 
 } // namespace type
 } // namespace metric
