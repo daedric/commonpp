@@ -16,7 +16,7 @@ namespace commonpp
 {
 namespace string
 {
-std::string base64_encode(const std::string& str);
+std::string base64_encode(const uint8_t* it, const uint8_t* end);
 
 // non-stream based implementation of hex function.
 std::string hex(const uint8_t* it, const uint8_t* end);
