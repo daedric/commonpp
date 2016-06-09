@@ -11,6 +11,7 @@
 #include "commonpp/core/string/encode.hpp"
 
 #include <boost/archive/iterators/base64_from_binary.hpp>
+#include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
 
 namespace commonpp
@@ -55,10 +56,11 @@ std::string hex(const uint8_t* it, const uint8_t* end)
     return str;
 }
 
+namespace bai = boost::archive::iterators;
+
 // inspiration from here: http://stackoverflow.com/a/16775827
 std::string base64_encode(const uint8_t* it, const uint8_t* end) 
 {
-    namespace bai = boost::archive::iterators;
     static const char* padding[] = {"", "==", "="};
 
     using encoder =
@@ -68,6 +70,34 @@ std::string base64_encode(const uint8_t* it, const uint8_t* end)
     std::copy(encoder(it), encoder(end), std::back_inserter(result));
 
     result += padding[std::distance(it, end) % 3];
+
+    return result;
+}
+
+std::vector<uint8_t> base64_decode(const char* begin, const char* end)
+{
+    std::vector<uint8_t> result;
+
+    using decoder =
+        bai::transform_width<bai::binary_from_base64<const char*>, 8, 6>;
+
+    auto size = std::distance(begin, end);
+
+    if (!size)
+    {
+        return result;
+    }
+
+    if (begin[size - 1] == '=')
+    {
+        --size;
+        if (size && begin[size - 1] == '=')
+        {
+            --size;
+        }
+    }
+
+    std::copy(decoder(begin), decoder(begin + size), std::back_inserter(result));
 
     return result;
 }

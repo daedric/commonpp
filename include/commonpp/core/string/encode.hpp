@@ -11,12 +11,14 @@
 
 #pragma once
 #include <string>
+#include <vector>
 
 namespace commonpp
 {
 namespace string
 {
 std::string base64_encode(const uint8_t* it, const uint8_t* end);
+std::vector<uint8_t> base64_decode(const char* begin, const char* end);
 
 // non-stream based implementation of hex function.
 std::string hex(const uint8_t* it, const uint8_t* end);
