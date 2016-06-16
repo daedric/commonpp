@@ -47,45 +47,50 @@ struct Options
     template <typename... E>
     BOOST_CXX14_CONSTEXPR Options(E... v)
     {
-        flag = set(initial_value..., v...);
+        flag_ = set(initial_value..., v...);
     }
 
     Options& operator&=(Enum f)
     {
-        flag |= enum_to_number(f);
+        flag_ |= enum_to_number(f);
         return *this;
     }
 
     Options& operator+=(Enum f)
     {
-        flag |= enum_to_number(f);
+        flag_ |= enum_to_number(f);
         return *this;
     }
 
     Options& operator-=(Enum f)
     {
-        flag = flag & ~enum_to_number(f);
+        flag_ = flag_ & ~enum_to_number(f);
         return *this;
     }
 
     bool operator&(Enum f) const
     {
-        return (flag & enum_to_number(f)) != 0;
+        return (flag_ & enum_to_number(f)) != 0;
     }
 
     bool operator[](Enum f) const
     {
-        return (flag & enum_to_number(f)) != 0;
+        return (flag_ & enum_to_number(f)) != 0;
     }
 
     bool empty() const
     {
-        return flag == 0;
+        return flag_ == 0;
+    }
+
+    Underlying flag() const noexcept
+    {
+        return flag_;
     }
 
     void unsafe_set_flag(Underlying u)
     {
-        flag = u;
+        flag_ = u;
     }
 
 private:
@@ -105,7 +110,7 @@ private:
         return set(value) | set(tail...);
     }
 
-    Underlying flag = set(initial_value...);
+    Underlying flag_ = set(initial_value...);
 };
 
 #define COMMONPP_PRINT_OPTION_IF(R, Opts, Elem)                                \
