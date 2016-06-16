@@ -78,6 +78,12 @@ struct Options
         return (flag_ & enum_to_number(f)) != 0;
     }
 
+    template <Enum... e>
+    bool operator==(const Options<Enum, e...>& rhs) const noexcept
+    {
+        return flag() == rhs.flag();
+    }
+
     bool empty() const
     {
         return flag_ == 0;
