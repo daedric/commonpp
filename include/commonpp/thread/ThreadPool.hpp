@@ -94,6 +94,14 @@ public:
                       Callable&& callable,
                       int service_id = ROUND_ROBIN);
 
+    size_t threads() const noexcept;
+
+    template <typename Callable>
+    void postAll(Callable callable);
+
+    template <typename Callable>
+    void dispatchAll(Callable callable);
+
 private:
     template <typename Duration, typename Callable>
     void schedule_timer(TimerPtr& timer, Duration, Callable&& callable);
@@ -154,6 +162,24 @@ ThreadPool::TimerPtr ThreadPool::schedule(Duration delay,
         std::make_shared<boost::asio::deadline_timer>(getService(service_id));
     schedule_timer(timer, delay, std::forward<Callable>(callable));
     return timer;
+}
+
+template <typename Callable>
+void ThreadPool::postAll(Callable callable)
+{
+    for (size_t i = 0; i < nb_thread_; ++i)
+    {
+        post(callable);
+    }
+}
+
+template <typename Callable>
+void ThreadPool::dispatchAll(Callable callable)
+{
+    for (size_t i = 0; i < nb_thread_; ++i)
+    {
+        post(callable);
+    }
 }
 
 } // namespace thread

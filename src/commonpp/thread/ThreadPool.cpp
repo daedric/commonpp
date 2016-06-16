@@ -315,5 +315,10 @@ bool ThreadPool::runningInPool() const noexcept
     return false;
 }
 
+size_t ThreadPool::threads() const noexcept
+{
+    return nb_thread_;
+}
+
 } // namespace thread
 } // namespace commonpp
