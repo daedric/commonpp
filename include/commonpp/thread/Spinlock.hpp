@@ -49,9 +49,14 @@ struct _spinlock
 {
     mutable LockType state;
 
+    bool try_lock() const
+    {
+        return state.exchange(Locked, std::memory_order_acquire) != Locked;
+    }
+
     void lock() const
     {
-        while (state.exchange(Locked, std::memory_order_acquire) == Locked)
+        while (!try_lock)
         {
 #if defined(__i386__) || defined(__x86_64__)
 # ifdef __clang__
@@ -79,6 +84,7 @@ namespace detail
 struct Spinlock : private detail::_spinlock
 {
     using detail::_spinlock::lock;
+    using detail::_spinlock::try_lock;
     using detail::_spinlock::unlock;
 };
 } // namespace thread
