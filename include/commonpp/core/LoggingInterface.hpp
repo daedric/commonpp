@@ -121,6 +121,9 @@ FWD_DECLARE_LOGGER(global_logger, BasicLogger);
         return l;                                                              \
     }();
 
+
+#define LOG_SEV(l, s) BOOST_LOG_SEV(l, s)
+#define GLOG_SEV(sev) LOG_SEV(::commonpp::core::global_logger, sev)
 #define LOG(l, s) BOOST_LOG_SEV(l, ::commonpp::s)
 #define GLOG(sev) LOG(::commonpp::core::global_logger, sev)
 #define TRACE(sev) ENABLE_CURRENT_FCT_LOGGING(); GLOG(sev)
