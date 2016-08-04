@@ -49,6 +49,8 @@ public:
     bool getBool(const std::string& name = "") const;
     const std::string& getString(const std::string& name = "") const;
 
+    size_t metrics() const noexcept;
+
 private:
     bool has_values() const
     {

@@ -166,6 +166,12 @@ std::ostream& operator<<(std::ostream& os, const MetricValue& value)
     return os;
 }
 
+size_t MetricValue::metrics() const noexcept
+{
+    return doubles_.size() + integers_.size() + strings_.size() +
+           booleans_.size();
+}
+
 using PairSSVector = std::vector<std::pair<std::string, std::string>>;
 
 template <typename T>
@@ -222,10 +228,19 @@ std::string MetricValue::to_influx(const MetricTag&, const T& vector) const
         result += result.empty() ? "" : ",";
         if (d.first.empty())
         {
-            throw std::runtime_error("value name is required for influxdb");
+            if (metrics() > 1)
+            {
+                throw std::runtime_error("value name is required for influxdb");
+            }
+
+            result += "value";
+        }
+        else
+        {
+            result += sanitize_influx(d.first);
         }
 
-        result += sanitize_influx(d.first) + "=" + string::stringify(d.second);
+        result += "=" + string::stringify(d.second);
     }
 
     return result;
@@ -245,10 +260,19 @@ std::string MetricValue::to_influx<PairSBVector>(const MetricTag&,
         result += result.empty() ? "" : ",";
         if (d.first.empty())
         {
-            throw std::runtime_error("value name is required for influxdb");
+            if (metrics() > 1)
+            {
+                throw std::runtime_error("value name is required for influxdb");
+            }
+
+            result += "value";
+        }
+        else
+        {
+            result += sanitize_influx(d.first);
         }
 
-        result += sanitize_influx(d.first) + "=" + (d.second ? "t" : "f");
+        result += std::string("=") + (d.second ? "t" : "f");
     }
 
     return result;
