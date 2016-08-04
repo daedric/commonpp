@@ -150,6 +150,13 @@ struct Voidify { void operator&(NullSink&){}};
 #endif
 // clang-format on
 
+#define DTRACE(sev)                                                            \
+    ENABLE_CURRENT_FCT_LOGGING();                                              \
+    DGLOG(sev)
+#define DTRACE_LOG(l, sev)                                                     \
+    ENABLE_CURRENT_FCT_LOGGING();                                              \
+    DLOG(l, sev)
+
 void init_logging();
 void enable_console_logging();
 void enable_builtin_syslog();
