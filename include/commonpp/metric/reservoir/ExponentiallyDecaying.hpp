@@ -99,6 +99,9 @@ private:
 };
 
 template <size_t s, size_t a, typename c, typename m>
+const WeightedReservoirTag ExponentiallyDecaying<s, a, c, m>::tag = {};
+
+template <size_t s, size_t a, typename c, typename m>
 ExponentiallyDecaying<s, a, c, m>::ExponentiallyDecaying()
 : gen_(random_())
 , dis_(0, 1)
