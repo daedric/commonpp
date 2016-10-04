@@ -43,7 +43,7 @@ std::string url_encode(const char* begin, const char* end)
         }
         else
         {
-            result += "%" + string::hex(&ch, &ch + 1);
+            result += "%" + string::hex_encode(&ch, &ch + 1);
         }
     }
 

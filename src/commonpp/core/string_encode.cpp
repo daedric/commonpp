@@ -44,7 +44,7 @@ static const char* HEXTABLE[256] = {
     "fc", "fd", "fe", "ff",
 };
 
-std::string hex(const uint8_t* it, const uint8_t* end)
+std::string hex_encode(const uint8_t* it, const uint8_t* end)
 {
     std::string str;
     str.reserve((end - it) * 2);
@@ -54,6 +54,31 @@ std::string hex(const uint8_t* it, const uint8_t* end)
     }
 
     return str;
+}
+
+std::vector<uint8_t> hex_decode(const char* it, const char* end)
+{
+    std::vector<uint8_t> result;
+    auto size = std::distance(it, end);
+
+    if (size % 2 != 0)
+    {
+        throw std::invalid_argument(
+            "the distance between the two iterators must be even");
+    }
+
+    result.reserve(size / 2);
+    char tmp[3] = {0, 0, 0};
+    for (; it != end;)
+    {
+        tmp[0] = *it++;
+        tmp[1] = *it++;
+        auto val = std::strtoul(tmp, nullptr, 16);
+        uint8_t* data = reinterpret_cast<uint8_t*>(&val);
+        result.emplace_back(data[0]);
+    }
+
+    return result;
 }
 
 namespace bai = boost::archive::iterators;
