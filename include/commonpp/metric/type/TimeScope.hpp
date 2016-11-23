@@ -24,8 +24,9 @@ template <typename Reservoir, typename Precision = std::chrono::microseconds>
 class TimeScope
 {
 public:
-    TimeScope(Reservoir& r)
+    TimeScope(Reservoir& r, Clock::time_point start = Clock::now())
     : reservoir_(r)
+    , start_(start)
     {
     }
 
@@ -46,7 +47,7 @@ public:
 
 private:
     Reservoir& reservoir_;
-    const Clock::time_point start_ = Clock::now();
+    const Clock::time_point start_;
     bool drop_ = false;
 };
 
