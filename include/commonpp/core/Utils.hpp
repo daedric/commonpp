@@ -30,7 +30,7 @@ void (*get_fake_delete(T*))(T*)
 }
 
 template <typename EnumType>
-static inline
+static inline constexpr
     typename std::enable_if<std::is_enum<EnumType>::value,
                             typename std::underlying_type<EnumType>::type>::type
     enum_to_number(EnumType value) noexcept

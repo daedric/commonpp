@@ -45,35 +45,35 @@ struct Options
     constexpr Options() = default;
 
     template <typename... E>
-    BOOST_CXX14_CONSTEXPR Options(E... v)
+    BOOST_CXX14_CONSTEXPR Options(E... v) noexcept
     {
         flag_ = set(initial_value..., v...);
     }
 
-    Options& operator&=(Enum f)
+    Options& operator&=(Enum f) noexcept
     {
         flag_ |= enum_to_number(f);
         return *this;
     }
 
-    Options& operator+=(Enum f)
+    Options& operator+=(Enum f) noexcept
     {
         flag_ |= enum_to_number(f);
         return *this;
     }
 
-    Options& operator-=(Enum f)
+    Options& operator-=(Enum f) noexcept
     {
         flag_ = flag_ & ~enum_to_number(f);
         return *this;
     }
 
-    bool operator&(Enum f) const
+    bool operator&(Enum f) const noexcept
     {
         return (flag_ & enum_to_number(f)) != 0;
     }
 
-    bool operator[](Enum f) const
+    bool operator[](Enum f) const noexcept
     {
         return (flag_ & enum_to_number(f)) != 0;
     }
@@ -84,7 +84,7 @@ struct Options
         return flag() == rhs.flag();
     }
 
-    bool empty() const
+    bool empty() const noexcept
     {
         return flag_ == 0;
     }
@@ -94,24 +94,29 @@ struct Options
         return flag_;
     }
 
-    void unsafe_set_flag(Underlying u)
+    void unsafe_set_flag(Underlying u) noexcept
     {
         flag_ = u;
     }
 
+    void reset() noexcept
+    {
+        flag_ = 0;
+    }
+
 private:
-    static constexpr Underlying set()
+    static constexpr Underlying set() noexcept
     {
         return 0;
     }
 
-    static constexpr Underlying set(Enum value)
+    static constexpr Underlying set(Enum value) noexcept
     {
         return enum_to_number(value);
     }
 
     template <typename Head, typename... Tail>
-    static constexpr Underlying set(Head value, Tail... tail)
+    static constexpr Underlying set(Head value, Tail... tail) noexcept
     {
         return set(value) | set(tail...);
     }
