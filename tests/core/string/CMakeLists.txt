@@ -11,3 +11,4 @@
 set(MODULE "core_string")
 add_definitions("-DBOOST_TEST_MODULE=${MODULE}")
 ADD_COMMONPP_TEST(stringify)
+ADD_COMMONPP_TEST(encode)
