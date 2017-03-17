@@ -22,6 +22,10 @@ std::vector<uint8_t> base64_decode(const char* begin, const char* end);
 
 // non-stream based implementation of hex function.
 std::string hex_encode(const uint8_t* begin, const uint8_t* end);
+std::string hex_encode(const std::vector<uint8_t>& data);
+
 std::vector<uint8_t> hex_decode(const char* begin, const char* end);
+std::vector<uint8_t> hex_decode(const std::string& str);
+
 } // namespace string
 } // namespace commonpp

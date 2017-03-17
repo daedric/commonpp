@@ -47,6 +47,11 @@ static const char* HEXTABLE[256] = {
     "fc", "fd", "fe", "ff",
 };
 
+std::string hex_encode(const std::vector<uint8_t>& v)
+{
+    return hex_encode(v.data(), v.data() + v.size());
+}
+
 std::string hex_encode(const uint8_t* it, const uint8_t* end)
 {
     std::string str;
@@ -57,6 +62,12 @@ std::string hex_encode(const uint8_t* it, const uint8_t* end)
     }
 
     return str;
+}
+
+
+std::vector<uint8_t> hex_decode(const std::string & str)
+{
+    return hex_decode(str.data(), str.data() + str.size());
 }
 
 std::vector<uint8_t> hex_decode(const char* it, const char* end)
