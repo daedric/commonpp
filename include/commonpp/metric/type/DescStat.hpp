@@ -100,7 +100,13 @@ public:
         result.push(mean(acc), "mean");
         result.push(min(acc), "min");
         result.push(max(acc), "max");
-        result.push(variance(acc), "variance");
+        {
+            auto var = variance(acc);
+            if(var >= 0)
+            {
+                result.push(::sqrt(var), "stdev");
+            }
+        }
 
         result.push(tail_quantile(acc, bacc::quantile_probability = 0.50),
                     "median");
@@ -138,7 +144,13 @@ public:
         result.push(weighted_mean(acc), "mean");
         result.push(min(acc), "min");
         result.push(max(acc), "max");
-        result.push(weighted_variance(acc), "variance");
+        {
+            auto var = weighted_variance(acc);
+            if(var >= 0)
+            {
+                result.push(::sqrt(var), "stdev");
+            }
+        }
         result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.50), "median");
         result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.75), "p75");
         result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.95), "p95");
