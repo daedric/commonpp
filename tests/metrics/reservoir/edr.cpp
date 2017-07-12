@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(long_period_of_inactivity_should_not_corrupt_sampling_rate)
     reservoir.pushValue(2000);
     {
         auto values = extract_values(reservoir);
-        BOOST_CHECK_EQUAL(values.size(), 2);
+        BOOST_CHECK_EQUAL(values.size(), 10);
         for (auto v : values)
         {
             BOOST_CHECK(v >= 1000 && v <= 3000);
