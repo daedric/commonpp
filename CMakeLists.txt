@@ -111,7 +111,9 @@ check_have_thread_local_specifier(HAVE_THREAD_LOCAL_SPECIFIER)
 #Thread
 find_package(Threads REQUIRED)
 find_package(TBB REQUIRED)
-include_directories(${TBB_include_DIRS})
+include_directories(${TBB_INCLUDE_DIRS})
+link_directories(${TBB_LIBRARY_DIRS})
+link_directories(${TBB_DEBUG_LIBRARY_DIRS})
 
 find_package(HWLOC)
 if (HWLOC_FOUND)
@@ -160,6 +162,7 @@ endif()
 
 if (${HAVE_HWLOC})
     set (COMMONPP_DEPS ${COMMONPP_DEPS} ${HWLOC_LIBRARY})
+    include_directories(${HWLOC_INCLUDE_DIR})
 endif()
 
 add_subdirectory(include/)
