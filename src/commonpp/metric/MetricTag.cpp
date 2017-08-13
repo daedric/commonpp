@@ -26,7 +26,7 @@ MetricTag::MetricTag(std::string name)
 MetricTag MetricTag::create(std::string measure_name) const
 {
     MetricTag tmp = *this;
-    if (not tmp.name_.empty())
+    if (!tmp.name_.empty())
     {
         tmp.name_ += "." + measure_name;
     }
@@ -44,7 +44,7 @@ MetricTag MetricTag::operator()(std::string name) const
 
 bool MetricTag::hasTags() const noexcept
 {
-    return not tags_.empty();
+    return !tags_.empty();
 }
 
 MetricTag& MetricTag::operator+=(std::initializer_list<std::string>&& t)
@@ -89,7 +89,7 @@ MetricTag MetricTag::operator+(const MetricTag& rhs) const
     MetricTag result = *this;
     result.tags_.insert(std::end(result.tags_), std::begin(rhs.tags_),
                         std::end(rhs.tags_));
-    if (not result.name_.empty())
+    if (!result.name_.empty())
     {
         result.name_ += "." + rhs.name_;
     }
@@ -132,7 +132,7 @@ const std::string& MetricTag::toGraphiteFormat(const std::string& prefix) const
     }
 
     graphite_ = prefix;
-    if (not(graphite_.empty() || boost::ends_with(graphite_, ".")))
+    if (!(graphite_.empty() || boost::ends_with(graphite_, ".")))
     {
         graphite_ += ".";
     }
@@ -142,7 +142,7 @@ const std::string& MetricTag::toGraphiteFormat(const std::string& prefix) const
         graphite_ += sanitize_graphite(tag.second) + ".";
     }
 
-    if (not name_.empty()) // We want to keep the dots
+    if (!name_.empty()) // We want to keep the dots
     {
         graphite_ += name_;
     }

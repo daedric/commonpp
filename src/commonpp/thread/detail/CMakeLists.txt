@@ -16,4 +16,5 @@ endif()
 add_commonpp_library_source(
     SOURCES
         Core.cpp
-        Cores.cpp)
+        Cores.cpp
+        logger.cpp)
