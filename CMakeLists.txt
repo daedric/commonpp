@@ -121,14 +121,16 @@ if (HWLOC_FOUND)
 endif()
 
 #Boost
-if (${BUILD_SHARED_LIBS})
-    set(Boost_USE_STATIC_LIBS    OFF)
-    add_definitions("-DBOOST_ALL_DYN_LINK=1")
-ELSE()
-    set(Boost_USE_STATIC_LIBS    ON)
-endif()
+if (NOT WIN32)
+	if (${BUILD_SHARED_LIBS})
+		set(Boost_USE_STATIC_LIBS    OFF)
+		add_definitions("-DBOOST_ALL_DYN_LINK=1")
+	ELSE()
+		set(Boost_USE_STATIC_LIBS    ON)
+	endif()
 
-set(Boost_USE_MULTITHREADED  ON)
+	set(Boost_USE_MULTITHREADED  ON)
+endif()
 
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     set(HAVE_SYSLOG 1)
@@ -139,6 +141,7 @@ find_package(Boost 1.54.0
         unit_test_framework
         log
         log_setup
+        date_time
         filesystem
         thread
         system

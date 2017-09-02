@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/uicpe9aefv7ufiqs/branch/master?svg=true)](https://ci.appveyor.com/project/daedric/commonpp/branch/master)
+
 # CommonPP
 
 `commonpp` is a multi purpose library easing very few operations like:
@@ -26,6 +28,21 @@ It builds on Mac OS X and Linux. It probably build on *BSD but I did not test
     $> make cmake
     $> make
     $> make test
+
+#### On windows
+
+`commonpp` can be built and used on windows. The prefered way is to use
+`vcpkg`.
+
+The required dependencies can be installed using the following command:
+
+    $> .\vcpkg.exe install boost:x64-windows tbb:x64-windows hwloc:x64-windows
+
+Then you can generate a Visual Studio solution giving the vcpkg toolchain file.
+
+Please note that only VS2017 has been tested. Also, static `TBB` installation
+cannot be done, so the DLL will need to be in the path to execute binaries
+depending on `commonpp`.
 
 ### Why?
 

@@ -8,13 +8,21 @@
 # Copyright (c) 2016 Thomas Sanchez.  All rights reserved.
 #
 
+set(srcs
+	logger.cpp
+)
 
 if (NOT HWLOC_FOUND)
-    return ()
+	message(WARNING "HWLOC has not been found, thread pining is disabled.")
+else()
+	set(srcs
+		${srcs}
+		Core.cpp
+		Cores.cpp
+	)
 endif()
 
 add_commonpp_library_source(
     SOURCES
-        Core.cpp
-        Cores.cpp
-        logger.cpp)
+        ${srcs}
+)
