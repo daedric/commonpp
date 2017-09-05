@@ -134,7 +134,7 @@ void InfluxDB::operator()(const Metrics::MetricVector& values)
                 boost::asio::buffer(data.data() + current_offset, BUFSIZ));
             current_offset += read_data;
             data.resize(current_offset);
-        } while (not net::http::Response::isCompleteHeader(data));
+        } while (!net::http::Response::isCompleteHeader(data));
 
         auto response = net::http::Response::from(std::move(data));
         if (response.code() != 204)

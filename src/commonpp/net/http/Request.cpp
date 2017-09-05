@@ -80,7 +80,7 @@ std::vector<char> Request::buildRequest() const
 
     buffer << method_ << " " << path_;
 
-    if (not query_.empty())
+    if (!query_.empty())
     {
         buffer << "?" << query_;
     }
@@ -88,7 +88,7 @@ std::vector<char> Request::buildRequest() const
     buffer << " HTTP/" << major_ << "." << minor_ << EOL;
     buffer << headers_;
 
-    if (not body_.empty())
+    if (!body_.empty())
     {
         buffer << "Content-Length: " << string::stringify(body_.size()) << EOL
                << EOL << body_;

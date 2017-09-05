@@ -146,19 +146,19 @@ static std::ostream& operator<<(std::ostream& os,
 
 std::ostream& operator<<(std::ostream& os, const MetricValue& value)
 {
-    if (not value.doubles_.empty())
+    if (!value.doubles_.empty())
     {
         os << "doubles: {" << value.doubles_ << "}, ";
     }
-    if (not value.integers_.empty())
+    if (!value.integers_.empty())
     {
         os << "integers: {" << value.integers_ << "}, ";
     }
-    if (not value.booleans_.empty())
+    if (!value.booleans_.empty())
     {
         os << "booleans: {" << value.booleans_ << "}, ";
     }
-    if (not value.strings_.empty())
+    if (!value.strings_.empty())
     {
         os << "strings: {" << value.strings_ << "}, ";
     }
@@ -283,7 +283,7 @@ std::string MetricValue::toGraphiteFormat(const MetricTag& tag,
 {
     std::string result;
 
-    if (not strings_.empty())
+    if (!strings_.empty())
     {
         LOG(mv_logger, warning)
             << "Strings metrics cannot be represented in graphite format.";

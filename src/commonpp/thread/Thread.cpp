@@ -29,14 +29,13 @@
 # include <boost/thread/tss.hpp>
 #endif
 
+#include "detail/logger.hpp"
 #include "commonpp/core/LoggingInterface.hpp"
 
 namespace commonpp
 {
 namespace thread
 {
-
-CREATE_LOGGER(thread_logger, "commonpp::thread");
 
 #if HAVE_THREAD_LOCAL_SPECIFIER
 static thread_local std::string current_name;
