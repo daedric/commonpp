@@ -71,7 +71,7 @@ void Metrics::calculate_metrics()
     for (const auto& counter : counters_)
     {
         auto values = counter.second();
-        if (not values.empty())
+        if (!values.empty())
         {
             metrics.emplace_back(std::cref(counter.first), std::move(values));
         }

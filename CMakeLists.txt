@@ -12,6 +12,13 @@ cmake_minimum_required(VERSION 2.8)
 
 CMAKE_POLICY(SET CMP0005 NEW)
 
+# Require at least Windows 7
+# See: https://msdn.microsoft.com/en-us/library/windows/desktop/aa383745(v=vs.85).aspx
+if(WIN32)
+    add_definitions(-D_WIN32_WINNT=0x0601)
+    add_definitions(-DNTDDI_VERSION=0x06010000)
+endif()
+
 # Set a default build type if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     message(STATUS "Setting cmake build type to 'Debug' as none was specified.")
@@ -104,7 +111,9 @@ check_have_thread_local_specifier(HAVE_THREAD_LOCAL_SPECIFIER)
 #Thread
 find_package(Threads REQUIRED)
 find_package(TBB REQUIRED)
-include_directories(${TBB_include_DIRS})
+include_directories(${TBB_INCLUDE_DIRS})
+link_directories(${TBB_LIBRARY_DIRS})
+link_directories(${TBB_DEBUG_LIBRARY_DIRS})
 
 find_package(HWLOC)
 if (HWLOC_FOUND)
@@ -112,14 +121,16 @@ if (HWLOC_FOUND)
 endif()
 
 #Boost
-if (${BUILD_SHARED_LIBS})
-    set(Boost_USE_STATIC_LIBS    OFF)
-    add_definitions("-DBOOST_ALL_DYN_LINK=1")
-ELSE()
-    set(Boost_USE_STATIC_LIBS    ON)
-endif()
+if (NOT WIN32)
+	if (${BUILD_SHARED_LIBS})
+		set(Boost_USE_STATIC_LIBS    OFF)
+		add_definitions("-DBOOST_ALL_DYN_LINK=1")
+	ELSE()
+		set(Boost_USE_STATIC_LIBS    ON)
+	endif()
 
-set(Boost_USE_MULTITHREADED  ON)
+	set(Boost_USE_MULTITHREADED  ON)
+endif()
 
 if ("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     set(HAVE_SYSLOG 1)
@@ -130,6 +141,7 @@ find_package(Boost 1.54.0
         unit_test_framework
         log
         log_setup
+        date_time
         filesystem
         thread
         system
@@ -153,6 +165,7 @@ endif()
 
 if (${HAVE_HWLOC})
     set (COMMONPP_DEPS ${COMMONPP_DEPS} ${HWLOC_LIBRARY})
+    include_directories(${HWLOC_INCLUDE_DIR})
 endif()
 
 add_subdirectory(include/)

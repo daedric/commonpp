@@ -10,6 +10,7 @@
  */
 #include "commonpp/core/string/date.hpp"
 
+#include <ctime>
 #include <sstream>
 
 namespace commonpp
@@ -22,11 +23,14 @@ std::string get_current_date()
     std::ostringstream out;
 
     std::tm tm;
-    ::gmtime_r(&current_time, &tm);
+#ifdef WIN32
+	_gmtime64_s(&tm, &current_time);
+#else
+	::gmtime_r(&current_time, &tm);
+#endif
 
     char buff[64] = {0};
     auto size = std::strftime(buff, sizeof(buff), "%c %Z", &tm);
-
     return {buff, size};
 }
 
@@ -41,7 +45,11 @@ std::string get_date(std::chrono::system_clock::time_point time_point)
 
     auto sec = static_cast<time_t>(seconds.count());
     std::tm tm;
-    ::gmtime_r(&sec, &tm);
+#ifdef WIN32
+	_gmtime64_s(&tm, &sec);
+#else
+	::gmtime_r(&sec, &tm);
+#endif
 
     char buff[32] = {0};
     auto size = std::strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M:%S", &tm);

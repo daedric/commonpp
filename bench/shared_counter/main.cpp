@@ -9,6 +9,14 @@
  *
  */
 
+#ifdef WIN32
+// Make sure boost asio is included before windows header.
+// Otherwise we will get the following error:
+// "error:  WinSock.h has already been included"
+#include <boost/asio.hpp>
+#include <windows.h>
+#endif
+
 #include <iostream>
 #include <commonpp/metric/type/Counter.hpp>
 #include <commonpp/thread/ThreadPool.hpp>

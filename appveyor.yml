@@ -1,0 +1,26 @@
+version: 1.0.{build}
+image: Visual Studio 2017
+configuration: Debug, Release
+clone_folder: c:\code\commonpp
+init:
+- ps: vcpkg install boost:x64-windows hwloc:x64-windows tbb:x64-windows
+environment:
+  matrix:
+  - FLAVOR: Debug
+  - FLAVOR: Release
+build_script:
+- cmd: >-
+    cd c:\code
+
+    mkdir build
+
+    cd build
+
+    cmake -DCMAKE_TOOLCHAIN_FILE=C:\Tools\vcpkg\scripts\buildsystems\vcpkg.cmake -G "Visual Studio 15 2017 Win64" c:\code\commonpp
+
+    cmake --build . --target ALL_BUILD --config %FLAVOR%
+test_script:
+- cmd: >-
+    cd C:\code\build
+
+    cmake --build . --target RUN_TESTS --config %FLAVOR%

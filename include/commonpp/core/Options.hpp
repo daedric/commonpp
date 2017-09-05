@@ -134,12 +134,12 @@ private:
 #define COMMONPP_DECLARE_OPTIONS_OSTREAM_OP(Options)                           \
     std::ostream& operator<<(std::ostream& os, const Options& opt)
 
-#define COMMONPP_GENERATE_OPTIONS_OSTREAM_OP(Options, Enum...)                 \
+#define COMMONPP_GENERATE_OPTIONS_OSTREAM_OP(Options, ...)                     \
     COMMONPP_DECLARE_OPTIONS_OSTREAM_OP(Options)                               \
     {                                                                          \
         os << BOOST_PP_STRINGIZE(Options) << ": [";                            \
         BOOST_PP_SEQ_FOR_EACH(COMMONPP_PRINT_OPTION_IF, opt,                   \
-                              BOOST_PP_VARIADIC_TO_SEQ(Enum))                  \
+                              BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))           \
         os << "]";                                                             \
         return os;                                                             \
     }

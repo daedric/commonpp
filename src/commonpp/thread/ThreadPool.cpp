@@ -28,8 +28,6 @@ namespace commonpp
 namespace thread
 {
 
-DECLARE_LOGGER(thread_logger, "commonpp::thread");
-
 namespace detail
 {
 template <ThreadPool::ThreadDispatchPolicy T>

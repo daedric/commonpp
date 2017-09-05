@@ -54,7 +54,7 @@ public:
 private:
     bool has_values() const
     {
-        return not empty();
+        return !empty();
     }
 
     template <typename T>
