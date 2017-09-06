@@ -164,7 +164,7 @@ if (UNIX AND NOT APPLE)
 endif()
 
 if (${HAVE_HWLOC})
-    set (COMMONPP_DEPS ${COMMONPP_DEPS} ${HWLOC_LIBRARY})
+    set (COMMONPP_DEPS ${COMMONPP_DEPS} ${HWLOC_LIBRARIES})
     include_directories(${HWLOC_INCLUDE_DIR})
 endif()
 
