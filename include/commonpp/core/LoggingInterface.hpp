@@ -172,6 +172,11 @@ void add_file_sink_rotate(
 
 // this should be called before any log happens
 void set_logging_level_for_channel(const std::string& channel, LoggingLevel level);
+        
+void add_gelf_sink(
+     std::string graylog_server,
+     uint16_t port,
+     std::vector<std::pair<std::string, std::string>> static_fields = {});
 
 } // namespace core
 } // namespace commonpp
