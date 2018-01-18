@@ -122,29 +122,22 @@ public:
     , host_(std::move(host))
     , port_(port)
     {
-        try
+        using udp = boost::asio::ip::udp;
+        udp::resolver resolver(io_service_);
+        udp::resolver::query query(host_, "");
+
+        udp::resolver::iterator r = resolver.resolve(query);
+        udp::resolver::iterator end;
+
+        if (r == end)
         {
-            using udp = boost::asio::ip::udp;
-            udp::resolver resolver(io_service_);
-            udp::resolver::query query(host_, "");
-
-            udp::resolver::iterator r = resolver.resolve(query);
-            udp::resolver::iterator end;
-
-            if (r == end)
-            {
-                throw std::runtime_error("Cannot resolve GELF host address: " +
-                                         host_);
-            }
-
-            udp::endpoint endpoint = *r;
-            endpoint.port(port);
-            socket_.connect(endpoint);
+            throw std::runtime_error("Cannot resolve Graylog host address: " +
+                                     host_);
         }
-        catch (std::exception& e)
-        {
-            throw;
-        }
+
+        udp::endpoint endpoint = *r;
+        endpoint.port(port);
+        socket_.connect(endpoint);
     }
 
     void consume(logging::record_view const& rec, string_type const& payload)

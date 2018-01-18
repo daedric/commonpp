@@ -12,7 +12,9 @@
 #pragma once
 
 #include <iosfwd>
-
+#include <vector>
+#include <utility>
+#include <string>
 #include <commonpp/core/config.hpp>
 
 #include <boost/log/core.hpp>

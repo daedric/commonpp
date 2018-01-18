@@ -42,7 +42,8 @@ namespace commonpp
 namespace string
 {
 
-std::string escape_json_string(const std::string& s) noexcept;
+std::string escape_json_string(const std::string& s);
+
 
 } // namespace string
 } // namespace commonpp

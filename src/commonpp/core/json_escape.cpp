@@ -71,7 +71,7 @@ std::size_t extra_space(const std::string& s) noexcept
 
         default:
         {
-            if (c >= 0x00 and c <= 0x1f)
+            if (c >= 0x00 && c <= 0x1f)
             {
                 // from c (1 byte) to \uxxxx (6 bytes)
                 result += 5;
@@ -94,7 +94,7 @@ representation.
 @return  the escaped string
 @complexity Linear in the length of string @a s.
 */
-std::string escape_json_string(const std::string& s) noexcept
+std::string escape_json_string(const std::string& s)
 {
     const auto space = extra_space(s);
     if (space == 0)
