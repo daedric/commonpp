@@ -10,52 +10,34 @@
  */
 
 #include "commonpp/core/LoggingInterface.hpp"
-
-#include <cstdlib>
-#include <iostream>
-#include <thread>
-
-#include <boost/container/flat_map.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/log/attributes/function.hpp>
-#include <boost/log/core.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/expressions/attr.hpp>
-#include <boost/log/expressions/formatters/date_time.hpp>
-#include <boost/log/expressions/formatters/named_scope.hpp>
-#include <boost/log/sinks/sync_frontend.hpp>
-#include <boost/log/sinks/syslog_backend.hpp>
-#include <boost/log/sinks/text_multifile_backend.hpp>
-#include <boost/log/sources/basic_logger.hpp>
-#include <boost/log/sources/record_ostream.hpp>
-#include <boost/log/sources/severity_channel_logger.hpp>
-#include <boost/log/sources/severity_logger.hpp>
-#include <boost/log/support/date_time.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/utility/setup/file.hpp>
-#include <boost/log/utility/value_ref.hpp>
-
-#include <boost/phoenix/bind.hpp>
-
 #include "commonpp/core/Utils.hpp"
+#include "commonpp/core/config.hpp"
 #include "commonpp/core/string/json_escape.hpp"
-#include "commonpp/thread/Thread.hpp"
-
-#include <boost/asio.hpp>
+#include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
+
+#include <boost/log/attributes/attribute_cast.hpp>
+#include <boost/log/core/core.hpp>
+#include <boost/log/detail/config.hpp>
+#include <boost/log/expressions.hpp>
+#include <boost/log/expressions/keyword_fwd.hpp>
+#include <boost/log/keywords/severity.hpp>
+#include <boost/log/sinks/basic_sink_backend.hpp>
+#include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/utility/formatting_ostream_fwd.hpp>
+#include <random>
+#include <stdint.h>
+#include <string>
+
 namespace logging = boost::log;
 namespace sinks = logging::sinks;
-namespace keywords = logging::keywords;
 namespace expr = logging::expressions;
-namespace attrs = logging::attributes;
-namespace src = logging::sources;
 
 namespace
 {
 
-size_t to_syslog_level(commonpp::LoggingLevel level)
+size_t to_syslog_level(commonpp::LoggingLevel level) noexcept
 {
     return 7 - static_cast<size_t>(level);
 }
@@ -80,6 +62,7 @@ public:
         // it might be possible to "pre-render" these to a fragment of json.
         for (auto& s : static_fields_)
         {
+            s.first = commonpp::string::escape_json_string(s.first);
             s.second = commonpp::string::escape_json_string(s.second);
         }
     }
@@ -136,16 +119,18 @@ public:
         }
 
         udp::endpoint endpoint = *r;
-        endpoint.port(port);
-        socket_.connect(endpoint);
+        endpoint.port(port_);
+
+        boost::system::error_code ec;
+        socket_.connect(endpoint, ec);
     }
 
     void consume(logging::record_view const& rec, string_type const& payload)
     {
-
         if (payload.size() < MAX_PACKET_SIZE)
         {
-            socket_.send(boost::asio::buffer(payload, payload.size()));
+            boost::system::error_code ec;
+            socket_.send(boost::asio::buffer(payload, payload.size()), 0, ec);
         }
         else
         {
@@ -158,13 +143,14 @@ public:
 
 #if HAVE_THREAD_LOCAL_SPECIFIER
         static thread_local std::default_random_engine generator;
+        auto& rng = generator;
 #else
         static boost::thread_specific_ptr<std::default_random_engine> generator(
             new std::default_random_engine);
+        auto& rng = *generator;
 #endif
         const uint8_t num_chunks = 1 + ceil(payload.size() / MAX_PACKET_SIZE);
-        const int64_t msg_id =
-            std::uniform_int_distribution<int64_t>()(generator);
+        const int64_t msg_id = std::uniform_int_distribution<int64_t>()(rng);
 
         // setup the header.
         std::array<uint8_t, HEADER_OVERHEAD + MAX_PACKET_SIZE> buffer;
@@ -185,7 +171,9 @@ public:
 
             std::copy_n(payload_ptr, payload_size, &buffer[12]);
 
-            socket_.send(boost::asio::buffer(buffer, remaining + HEADER_OVERHEAD));
+            boost::system::error_code ec;
+            socket_.send(boost::asio::buffer(buffer, remaining + HEADER_OVERHEAD),
+                         0, ec);
             payload_ptr += payload_size;
             remaining -= payload_size;
         }

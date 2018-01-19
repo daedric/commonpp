@@ -168,7 +168,7 @@ std::string escape_json_string(const std::string& s)
 
         default:
         {
-            if (c >= 0x00 and c <= 0x1f)
+            if (c >= 0x00 && c <= 0x1f)
             {
                 // print character c as \uxxxx
                 sprintf(&result[pos + 1], "u%04x", int(c));
