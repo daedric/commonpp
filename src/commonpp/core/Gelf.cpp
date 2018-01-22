@@ -13,6 +13,7 @@
 #include "commonpp/core/Utils.hpp"
 #include "commonpp/core/config.hpp"
 #include "commonpp/core/string/json_escape.hpp"
+
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
 
@@ -27,8 +28,6 @@
 #include <boost/log/sinks/sync_frontend.hpp>
 #include <boost/log/sources/global_logger_storage.hpp>
 #include <boost/log/utility/formatting_ostream_fwd.hpp>
-#include <boost/uuid/uuid.hpp> // uuid class
-#include <boost/uuid/uuid_generators.hpp>
 #include <random>
 #include <set>
 #include <stdint.h>
@@ -126,8 +125,8 @@ public:
 
         if (r == end)
         {
-            throw std::runtime_error("Cannot resolve Graylog host address: " +
-                                     host_);
+            throw std::runtime_error("Cannot resolve GELF server address: " +
+                                     host_ + ":" + std::to_string(port_));
         }
 
         udp::endpoint endpoint = *r;
@@ -208,16 +207,17 @@ public:
     }
 };
 
-void add_gelf_sink(std::string graylog_server,
+void add_gelf_sink(std::string server,
                    uint16_t port,
                    std::vector<std::pair<std::string, std::string>> static_fields)
 {
-    auto backend = boost::make_shared<GelfUDPBackend>(graylog_server, port);
+    auto backend = boost::make_shared<GelfUDPBackend>(server, port);
     using sink_t = sinks::synchronous_sink<GelfUDPBackend>;
     boost::shared_ptr<sink_t> sink(new sink_t(backend));
 
     GelfFormatter fmt(commonpp::get_hostname(), std::move(static_fields));
     sink->set_formatter(fmt);
+    sink->set_filter(CommonppRecord.or_default(false) == true);
     logging::core::get()->add_sink(sink);
 }
 

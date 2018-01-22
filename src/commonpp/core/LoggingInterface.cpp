@@ -69,9 +69,6 @@ std::ostream& operator<<(std::ostream& strm, LoggingLevel level)
 }
 namespace core
 {
-BOOST_LOG_ATTRIBUTE_KEYWORD(Severity, "Severity", LoggingLevel);
-BOOST_LOG_ATTRIBUTE_KEYWORD(Channel, "Channel", std::string);
-BOOST_LOG_ATTRIBUTE_KEYWORD(CommonppRecord, "CommonppRecord", bool);
 
 DECLARE_BASIC_LOGGER(global_logger);
 
