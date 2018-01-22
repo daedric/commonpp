@@ -32,11 +32,14 @@ namespace reservoir
 // https://github.com/dropwizard/metrics/blob/master/metrics-core/src/main/java/io/dropwizard/metrics/ExponentiallyDecayingReservoir.java
 
 template <size_t size_ = 1028,
-          size_t alpha_time_1000 = 69, // doubles all 10s
+          size_t alpha_time_1000 = 15,
           typename clock_ = std::chrono::system_clock,
           typename Mutex = std::mutex>
 class ExponentiallyDecaying
 {
+
+    template <typename K, typename V>
+    using MapType = std::map<K, V>;
 
 public:
     static const WeightedReservoirTag tag;
@@ -51,18 +54,11 @@ public:
 
     struct Sample
     {
-        Weight mc_weight; //!< random weight for sampling multiplied with weight
-        Weight weight;    //!< time-based weight for exponential decay
+        Weight weight;
         double value;
-
-        bool operator < (const Sample &o) const
-        {
-            // for creating a min heap
-            return mc_weight > o.mc_weight;
-        }
     };
 
-    const std::chrono::minutes RESCALE_INTERVAL{10};
+    const std::chrono::hours RESCALE_INTERVAL{1};
 
 public:
     ExponentiallyDecaying();
@@ -77,7 +73,8 @@ public:
         auto acc = Summary::createAccumulator(size_unsafe(), tag);
         for (const auto& value : values_)
         {
-            acc(value.weight, value.value);
+            const auto& sample = value.second;
+            acc(sample.weight, sample.value);
         }
 
         return acc;
@@ -96,7 +93,7 @@ private:
     std::mt19937 gen_;
     std::uniform_real_distribution<> dis_;
 
-    std::vector<Sample> values_;
+    MapType<Weight, Sample> values_;
     Timepoint start_time_;
     Timepoint next_rescale_;
 };
@@ -111,7 +108,6 @@ ExponentiallyDecaying<s, a, c, m>::ExponentiallyDecaying()
 {
     start_time_ = Clock::now();
     next_rescale_ = start_time_ + RESCALE_INTERVAL;
-    values_.reserve(MAX_SIZE);
 }
 
 template <size_t s, size_t a, typename c, typename m>
@@ -137,30 +133,26 @@ size_t ExponentiallyDecaying<s, a, c, m>::size_unsafe() const
 template <size_t s, size_t a, typename c, typename m>
 void ExponentiallyDecaying<s, a, c, m>::pushValue(double value, Timepoint timestamp)
 {
-    if(mutex_.try_lock())
+    std::lock_guard<m> lock(mutex_);
+    rescale();
+
+    auto elapsed_time =
+        std::chrono::duration_cast<ElapsedTimeUnit>(timestamp - start_time_);
+    Sample sample{weight(elapsed_time), value};
+    double priority = sample.weight / dis_(gen_);
+
+    auto new_size = values_.size() + 1;
+    if (new_size <= MAX_SIZE)
     {
-        rescale();
-
-        auto elapsed_time =
-            std::chrono::duration_cast<ElapsedTimeUnit>(timestamp - start_time_);
-        auto exp_weight = weight(elapsed_time);
-        auto priority = exp_weight * dis_(gen_);
-
-        if (values_.size() < MAX_SIZE)
+        values_[priority] = sample;
+    }
+    else
+    {
+        auto it_first = values_.begin();
+        if (it_first->first < priority && values_.emplace(priority, sample).second)
         {
-            values_.emplace_back(Sample{priority, exp_weight, value});
-            std::push_heap(values_.begin(), values_.end());
+            values_.erase(it_first);
         }
-        else
-        {
-            if(priority > values_.front().mc_weight)
-            {
-                std::pop_heap(values_.begin(), values_.end());
-                values_.back() = Sample{priority, exp_weight, value};
-                std::push_heap(values_.begin(), values_.end());
-            }
-        }
-        mutex_.unlock();
     }
 }
 
@@ -178,15 +170,19 @@ void ExponentiallyDecaying<s, a, c, m>::rescale()
     auto old_start_time = start_time_;
     start_time_ = now;
 
+    decltype(values_) values;
+    values.swap(values_);
+
     const auto time =
         std::chrono::duration_cast<ElapsedTimeUnit>(start_time_ - old_start_time)
             .count();
 
     auto scale_factor = ::exp(-ALPHA * time);
-    for (auto& v : values_)
+    for (const auto& v : values)
     {
-        v.mc_weight *= scale_factor;
-        v.weight *= scale_factor;
+        auto key = v.first;
+        auto const& sample = v.second;
+        values_[key * scale_factor] = {sample.weight * scale_factor, sample.value};
     }
 }
 
