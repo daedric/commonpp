@@ -19,13 +19,11 @@ int main(int, char *[])
 {
     commonpp::core::init_logging();
 
-    // Add a graylog GELF sink to the server on localhost and set some
-    // static fields that are sent with each log message.
-    commonpp::core::add_gelf_sink(
-        "localhost", 12201,
-        {{"application_name", "gelf_test"}, {"environment", "production"}});
+    commonpp::core::add_gelf_sink("localhost", 12201,
+    {{"application_name", "gelf_test"}, {"environment", "production"}});
 
     commonpp::thread::ThreadPool pool(8);
+
     pool.start([](){
 
         for (int i = 0; i < 10000; i++)

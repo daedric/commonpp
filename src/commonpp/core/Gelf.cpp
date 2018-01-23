@@ -16,7 +16,6 @@
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
-
 #include <boost/log/attributes/attribute_cast.hpp>
 #include <boost/log/core/core.hpp>
 #include <boost/log/detail/config.hpp>
@@ -33,6 +32,8 @@
 #include <stdint.h>
 #include <string>
 #include <thread>
+#include <iostream>
+#include <thread>
 
 namespace logging = boost::log;
 namespace sinks = logging::sinks;
@@ -45,6 +46,7 @@ size_t to_syslog_level(commonpp::LoggingLevel level) noexcept
 {
     return 7 - static_cast<size_t>(level);
 }
+
 }
 
 namespace commonpp
@@ -166,7 +168,13 @@ public:
 
     void chunk_message(const string_type& payload)
     {
-        const uint8_t num_chunks = 1 + ceil(payload.size() / MAX_PACKET_SIZE);
+        const auto chunks = 1 + ceil(payload.size() / MAX_PACKET_SIZE);
+        if (chunks > 128)
+        {
+            std::cerr << "Error occured while sending GELF message: Message too big";
+            return;
+        }
+        const auto num_chunks = static_cast<uint8_t>(chunks);
 
         // setup the header.
         std::array<uint8_t, HEADER_OVERHEAD + MAX_PACKET_SIZE> buffer;
@@ -189,7 +197,7 @@ public:
 
             boost::system::error_code ec;
             socket_.send(boost::asio::buffer(buffer, remaining + HEADER_OVERHEAD),
-                         0, ec);
+                    0, ec);
             check_status(ec);
             if (ec)
             {
