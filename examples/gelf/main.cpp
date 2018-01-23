@@ -19,18 +19,27 @@ int main(int, char *[])
 {
     commonpp::core::init_logging();
 
-    commonpp::core::add_gelf_sink("localhost", 12201,
-    {{"application_name", "gelf_test"}, {"environment", "production"}});
+    commonpp::core::add_gelf_sink(
+        "localhost", 12201,
+        {{"application_name", "gelf_test"}, {"environment", "production"}});
 
-    commonpp::thread::ThreadPool pool(8);
+    commonpp::core::set_logging_level(commonpp::LoggingLevel::trace);
 
-    pool.start([](){
+    GLOG(trace)   << "A trace message";
+    GLOG(debug)   << "A debug message";
+    GLOG(info)    << "An info message";
+    GLOG(warning) << "A warning message";
+    GLOG(error)   << "An error message";
+    GLOG(fatal)   << "A fatal message";
 
+    commonpp::thread::ThreadPool pool(4);
+    pool.start([]() 
+    {
         for (int i = 0; i < 10000; i++)
         {
             // This message will be sent in chunked format.
             GLOG(warning) << "This really long message should be chunked"
-            << std::string(1000, '!') << ".BYE!";
+                          << std::string(1000, '!') << ".BYE!";
             GLOG(warning) << "\'this should ☺  be escaped\"";
             std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }

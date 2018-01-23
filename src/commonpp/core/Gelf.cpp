@@ -17,6 +17,8 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
 #include <boost/log/attributes/attribute_cast.hpp>
+#include <boost/log/attributes/value_extraction.hpp>
+#include <boost/log/core.hpp>
 #include <boost/log/core/core.hpp>
 #include <boost/log/detail/config.hpp>
 #include <boost/log/expressions.hpp>
@@ -25,29 +27,25 @@
 #include <boost/log/sinks/basic_sink_backend.hpp>
 #include <boost/log/sinks/frontend_requirements.hpp>
 #include <boost/log/sinks/sync_frontend.hpp>
+#include <boost/log/sinks/text_ostream_backend.hpp>
 #include <boost/log/sources/global_logger_storage.hpp>
+#include <boost/log/sources/record_ostream.hpp>
+#include <boost/log/sources/severity_logger.hpp>
+#include <boost/log/trivial.hpp>
+#include <boost/log/utility/formatting_ostream.hpp>
 #include <boost/log/utility/formatting_ostream_fwd.hpp>
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <boost/log/utility/setup/formatter_parser.hpp>
+#include <iostream>
+
+#include <iostream>
 #include <random>
-#include <set>
 #include <stdint.h>
 #include <string>
-#include <thread>
-#include <iostream>
-#include <thread>
 
 namespace logging = boost::log;
 namespace sinks = logging::sinks;
 namespace expr = logging::expressions;
-
-namespace
-{
-
-size_t to_syslog_level(commonpp::LoggingLevel level) noexcept
-{
-    return 7 - static_cast<size_t>(level);
-}
-
-}
 
 namespace commonpp
 {
@@ -82,6 +80,12 @@ public:
         for (auto s : static_fields_)
         {
             strm << "\"" << s.first << "\" : \"" << s.second << "\",";
+        }
+
+        auto severity = rec[Severity];
+        if (!severity.empty())
+        {
+            strm << "\"level\" : " << to_syslog_level(*severity) << ",";
         }
         strm << "\"short_message\" : \""
              << commonpp::string::escape_json_string(*rec[expr::smessage])
@@ -197,7 +201,7 @@ public:
 
             boost::system::error_code ec;
             socket_.send(boost::asio::buffer(buffer, remaining + HEADER_OVERHEAD),
-                    0, ec);
+                         0, ec);
             check_status(ec);
             if (ec)
             {
