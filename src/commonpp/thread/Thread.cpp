@@ -116,30 +116,30 @@ bool set_affinity_to_logical_core(int core, std::thread& th)
 #else
 int get_nb_physical_core()
 {
-    return -1;
+    return std::thread::hardware_concurrency();
 }
 
 int get_nb_logical_core()
 {
-    return -1;
+    return std::thread::hardware_concurrency();
 }
 
-bool set_affinity_to_physical_core(int core)
+bool set_affinity_to_physical_core(int)
 {
     return false;
 }
 
-bool set_affinity_to_logical_core(int core)
+bool set_affinity_to_logical_core(int)
 {
     return false;
 }
 
-bool set_affinity_to_physical_core(int core, std::thread&)
+bool set_affinity_to_physical_core(int, std::thread&)
 {
     return false;
 }
 
-bool set_affinity_to_logical_core(int core, std::thread&)
+bool set_affinity_to_logical_core(int, std::thread&)
 {
     return false;
 }
