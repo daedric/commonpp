@@ -11,14 +11,12 @@
 #pragma once
 
 #include <algorithm>
-#include <random>
 #include <chrono>
-#include <mutex>
 #include <cmath>
-
 #include <map>
-
 #include <mutex>
+#include <random>
+
 #include "types.hpp"
 
 namespace commonpp
@@ -55,7 +53,7 @@ public:
         Weight weight;    //!< time-based weight for exponential decay
         double value;
 
-        bool operator < (const Sample &o) const
+        bool operator<(const Sample& o) const noexcept
         {
             // for creating a min heap
             return mc_weight > o.mc_weight;
@@ -137,7 +135,7 @@ size_t ExponentiallyDecaying<s, a, c, m>::size_unsafe() const
 template <size_t s, size_t a, typename c, typename m>
 void ExponentiallyDecaying<s, a, c, m>::pushValue(double value, Timepoint timestamp)
 {
-    if(mutex_.try_lock())
+    if (mutex_.try_lock())
     {
         rescale();
 
@@ -153,7 +151,7 @@ void ExponentiallyDecaying<s, a, c, m>::pushValue(double value, Timepoint timest
         }
         else
         {
-            if(priority > values_.front().mc_weight)
+            if (priority > values_.front().mc_weight)
             {
                 std::pop_heap(values_.begin(), values_.end());
                 values_.back() = Sample{priority, exp_weight, value};
