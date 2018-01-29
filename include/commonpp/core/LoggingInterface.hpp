@@ -202,7 +202,7 @@ void set_logging_level_for_channel(const std::string& channel, LoggingLevel leve
 
 void add_gelf_sink(
     std::string server,
-    uint16_t port,
+    std::string port,
     std::vector<std::pair<std::string, std::string>> static_fields = {});
 
 } // namespace core

@@ -13,6 +13,7 @@
 #include "commonpp/core/Utils.hpp"
 #include "commonpp/core/config.hpp"
 #include "commonpp/core/string/json_escape.hpp"
+#include "commonpp/net/Connection.hpp"
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
@@ -98,10 +99,9 @@ class GelfUDPBackend
     : public sinks::basic_formatted_sink_backend<char, sinks::synchronized_feeding>
 {
     boost::asio::io_service io_service_;
-    boost::asio::ip::udp::socket socket_;
+    std::unique_ptr<commonpp::net::UDPConnection> conn_;
     std::string host_;
-    uint16_t port_;
-    int socket_error_log_counter_;
+    std::string port_;
     std::mt19937_64 rng_;
 
     // to avoid spamming cerr with logs about a bad send()/connect(), only
@@ -114,55 +114,19 @@ public:
     using base =
         sinks::basic_formatted_sink_backend<char, sinks::synchronized_feeding>;
 
-    GelfUDPBackend(std::string host, uint16_t port)
+    GelfUDPBackend(std::string host, std::string port)
     : base()
-    , socket_(io_service_)
     , host_(std::move(host))
-    , port_(port)
-    , socket_error_log_counter_(0)
+    , port_(std::move(port))
     , rng_(std::random_device()())
     {
-        using udp = boost::asio::ip::udp;
-        udp::resolver resolver(io_service_);
-        udp::resolver::query query(host_, "");
-
-        udp::resolver::iterator r = resolver.resolve(query);
-        udp::resolver::iterator end;
-
-        if (r == end)
-        {
-            throw std::runtime_error("Cannot resolve GELF server address: " +
-                                     host_ + ":" + std::to_string(port_));
-        }
-
-        udp::endpoint endpoint = *r;
-        endpoint.port(port_);
-
-        boost::system::error_code ec;
-        socket_.connect(endpoint, ec);
-        check_status(ec);
-    }
-
-    inline void check_status(boost::system::error_code& ec)
-    {
-        if (ec)
-        {
-            if (socket_error_log_counter_ % SOCKET_ERROR_LOG_INTERVAL == 0)
-            {
-                std::cerr << "Error occured while sending GELF message: "
-                          << ec.message() << std::endl;
-            }
-            socket_error_log_counter_++;
-        }
     }
 
     void consume(logging::record_view const& rec, string_type const& payload)
     {
         if (payload.size() < MAX_PACKET_SIZE)
         {
-            boost::system::error_code ec;
-            socket_.send(boost::asio::buffer(payload, payload.size()), 0, ec);
-            check_status(ec);
+            send(payload.data(), payload.size());
         }
         else
         {
@@ -200,10 +164,7 @@ public:
             std::copy_n(payload_ptr, payload_size, &buffer[12]);
 
             boost::system::error_code ec;
-            socket_.send(boost::asio::buffer(buffer, remaining + HEADER_OVERHEAD),
-                         0, ec);
-            check_status(ec);
-            if (ec)
+            if (!send(buffer.data(), remaining + HEADER_OVERHEAD))
             {
                 break;
             }
@@ -213,6 +174,34 @@ public:
         }
     }
 
+    bool send(const void * data, size_t size)
+    {	
+        if (!conn_)
+        {
+            try
+            { 
+                conn_ = commonpp::net::UDPConnection::createConnection(io_service_, host_, port_);
+            }
+            catch (const std::exception & e)
+            {
+                std::cerr << "Cannot connect to " << host_ << ":" << port_ << " " << e.what();
+                return false;
+            }
+        }
+
+        boost::system::error_code ec;
+        conn_->socket.send(boost::asio::buffer(data, size), 0, ec);
+        if (ec)
+        {
+            std::cerr << "Error occured while sending GELF message: "
+                << ec.message() << std::endl;
+            conn_.reset();
+            return false;
+        }
+        return true;
+    }
+    
+
     uint64_t get_message_id()
     {
         return std::uniform_int_distribution<uint64_t>()(rng_);
@@ -220,7 +209,7 @@ public:
 };
 
 void add_gelf_sink(std::string server,
-                   uint16_t port,
+                   std::string port,
                    std::vector<std::pair<std::string, std::string>> static_fields)
 {
     auto backend = boost::make_shared<GelfUDPBackend>(server, port);

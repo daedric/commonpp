@@ -20,7 +20,7 @@ int main(int, char *[])
     commonpp::core::init_logging();
 
     commonpp::core::add_gelf_sink(
-        "localhost", 12201,
+        "localhost", "12201",
         {{"application_name", "gelf_test"}, {"environment", "production"}});
 
     commonpp::core::set_logging_level(commonpp::LoggingLevel::trace);
