@@ -164,7 +164,7 @@ public:
             std::copy_n(payload_ptr, payload_size, &buffer[12]);
 
             boost::system::error_code ec;
-            if (!send(buffer.data(), remaining + HEADER_OVERHEAD))
+            if (!send(buffer.data(), payload_size + HEADER_OVERHEAD))
             {
                 break;
             }
