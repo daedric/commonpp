@@ -67,7 +67,7 @@ public:
         // it might be possible to "pre-render" these to a fragment of json.
         for (auto& s : static_fields_)
         {
-            s.first = commonpp::string::escape_json_string(s.first);
+            s.first = "_" + commonpp::string::escape_json_string(s.first);
             s.second = commonpp::string::escape_json_string(s.second);
         }
     }
@@ -102,6 +102,7 @@ class GelfUDPBackend
     std::unique_ptr<commonpp::net::UDPConnection> conn_;
     std::string host_;
     std::string port_;
+    std::random_device dev_random_;
     std::mt19937_64 rng_;
 
     // to avoid spamming cerr with logs about a bad send()/connect(), only
@@ -118,8 +119,8 @@ public:
     : base()
     , host_(std::move(host))
     , port_(std::move(port))
-    , rng_(std::random_device()())
     {
+        rng_.seed(dev_random_());
     }
 
     void consume(logging::record_view const& rec, string_type const& payload)
