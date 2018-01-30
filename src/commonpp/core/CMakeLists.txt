@@ -13,4 +13,6 @@ add_commonpp_library_source(
         string_date.cpp
         string_encode.cpp
         LoggingInterface.cpp
+        json_escape.cpp
+        Gelf.cpp
         )

@@ -11,21 +11,23 @@
 
 #pragma once
 
-#include <iosfwd>
-
 #include <commonpp/core/config.hpp>
+#include <iosfwd>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include <boost/log/core.hpp>
 #include <boost/log/common.hpp>
-#include <boost/log/sources/severity_feature.hpp>
+#include <boost/log/core.hpp>
 #include <boost/log/sources/logger.hpp>
-#include <boost/log/sources/severity_logger.hpp>
 #include <boost/log/sources/severity_channel_logger.hpp>
+#include <boost/log/sources/severity_feature.hpp>
+#include <boost/log/sources/severity_logger.hpp>
 
-#include <boost/log/expressions/keyword.hpp>
 #include <boost/log/attributes.hpp>
 #include <boost/log/attributes/named_scope.hpp>
 #include <boost/log/attributes/scoped_attribute.hpp>
+#include <boost/log/expressions/keyword.hpp>
 
 namespace commonpp
 {
@@ -61,8 +63,33 @@ UNUSED_ATTR static LoggingLevel to_severity(int lvl) noexcept
     return info;
 }
 
+static inline size_t to_syslog_level(commonpp::LoggingLevel level) noexcept
+{
+    switch (level)
+    {
+    case trace:
+        return 7;
+    case debug:
+        return 7;
+    case info:
+        return 6;
+    case warning:
+        return 4;
+    case error:
+        return 3;
+    case fatal:
+        return 2;
+    default:
+        return 2;
+    }
+}
+
 namespace core
 {
+
+BOOST_LOG_ATTRIBUTE_KEYWORD(Severity, "Severity", LoggingLevel);
+BOOST_LOG_ATTRIBUTE_KEYWORD(Channel, "Channel", std::string);
+BOOST_LOG_ATTRIBUTE_KEYWORD(CommonppRecord, "CommonppRecord", bool);
 
 std::ostream& operator<<(std::ostream& strm, LoggingLevel level);
 
@@ -172,6 +199,11 @@ void add_file_sink_rotate(
 
 // this should be called before any log happens
 void set_logging_level_for_channel(const std::string& channel, LoggingLevel level);
+
+void add_gelf_sink(
+    std::string server,
+    std::string port,
+    std::vector<std::pair<std::string, std::string>> static_fields = {});
 
 } // namespace core
 } // namespace commonpp
