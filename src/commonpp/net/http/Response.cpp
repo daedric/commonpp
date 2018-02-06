@@ -12,6 +12,7 @@
 #include "commonpp/net/http/Response.hpp"
 #include <cstdlib>
 #include <sstream>
+#include <functional>
 
 namespace commonpp
 {

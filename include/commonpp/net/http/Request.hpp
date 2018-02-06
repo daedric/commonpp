@@ -21,6 +21,13 @@
 #include <commonpp/core/LoggingInterface.hpp>
 #include "detail/validators.hpp"
 
+// Undefine the following macros that are defined in <sys/sysmacros.h>
+// and make g++7 complain.
+#pragma push_macro("minor")
+#undef minor
+#pragma push_macro("major")
+#undef major
+
 namespace commonpp
 {
 namespace net
@@ -163,6 +170,9 @@ private:
     Headers headers_;
     std::vector<char> body_;
 };
+
+#pragma pop_macro("major")
+#pragma pop_macro("minor")
 
 } // namespace http
 } // namespace net
