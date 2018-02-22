@@ -184,6 +184,45 @@ if (${BUILD_TESTS})
     add_subdirectory(tests/)
 endif()
 
+
+find_program(CLANG_FORMAT
+        NAMES
+        clang-format
+        clang-format-9.0
+        clang-format-8.1
+        clang-format-8.0
+        clang-format-7.0
+        clang-format-6.2
+        clang-format-6.0
+        clang-format-5.2
+        clang-format-5.0
+        clang-format-4.0
+        clang-format-3.9
+        clang-format-3.8
+        )
+
+
+if (CLANG_FORMAT)
+    file(GLOB_RECURSE ALL_SOURCE_FILES
+            src/*.cpp
+            include/*.hpp
+            tests/*.cpp
+            tests/*.hpp
+            examples/*.cpp
+            examples/*.hpp
+            bench/*.cpp
+            bench/*.hpp
+    )
+
+    add_custom_target(
+            format
+            COMMAND
+            ${CLANG_FORMAT}
+            -style=file
+            -i
+            ${ALL_SOURCE_FILES})
+endif()
+
 set(commonpp_lib commonpp)
 
 export(TARGETS ${commonpp_libs}
