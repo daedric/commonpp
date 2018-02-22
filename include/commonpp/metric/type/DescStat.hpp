@@ -15,24 +15,22 @@
 #include <utility>
 #include <vector>
 
-#include <boost/noncopyable.hpp>
 #include <boost/accumulators/accumulators.hpp>
 #include <boost/accumulators/statistics.hpp>
-
 #include <boost/accumulators/statistics/max.hpp>
-#include <boost/accumulators/statistics/min.hpp>
 #include <boost/accumulators/statistics/mean.hpp>
+#include <boost/accumulators/statistics/min.hpp>
 #include <boost/accumulators/statistics/tail_quantile.hpp>
 #include <boost/accumulators/statistics/variance.hpp>
-
-#include <boost/accumulators/statistics/weighted_tail_quantile.hpp>
-#include <boost/accumulators/statistics/weighted_sum.hpp>
 #include <boost/accumulators/statistics/weighted_mean.hpp>
 #include <boost/accumulators/statistics/weighted_moment.hpp>
+#include <boost/accumulators/statistics/weighted_sum.hpp>
+#include <boost/accumulators/statistics/weighted_tail_quantile.hpp>
 #include <boost/accumulators/statistics/weighted_variance.hpp>
+#include <boost/noncopyable.hpp>
 
-#include <commonpp/metric/detail/types.hpp>
 #include <commonpp/metric/MetricValue.hpp>
+#include <commonpp/metric/detail/types.hpp>
 #include <commonpp/metric/reservoir/types.hpp>
 
 namespace commonpp
@@ -83,10 +81,10 @@ public:
         namespace bacc = boost::accumulators;
 
         MetricValue result;
+        using bacc::count;
+        using bacc::max;
         using bacc::mean;
         using bacc::min;
-        using bacc::max;
-        using bacc::count;
         using bacc::tail_quantile;
         using bacc::variance;
 
@@ -102,7 +100,7 @@ public:
         result.push(max(acc), "max");
         {
             auto var = variance(acc);
-            if(var >= 0)
+            if (var >= 0)
             {
                 result.push(::sqrt(var), "stdev");
             }
@@ -127,10 +125,10 @@ public:
         namespace bacc = boost::accumulators;
 
         MetricValue result;
-        using bacc::weighted_mean;
-        using bacc::min;
-        using bacc::max;
         using bacc::count;
+        using bacc::max;
+        using bacc::min;
+        using bacc::weighted_mean;
         using bacc::weighted_tail_quantile;
         using bacc::weighted_variance;
 
@@ -146,15 +144,19 @@ public:
         result.push(max(acc), "max");
         {
             auto var = weighted_variance(acc);
-            if(var >= 0)
+            if (var >= 0)
             {
                 result.push(::sqrt(var), "stdev");
             }
         }
-        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.50), "median");
-        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.75), "p75");
-        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.95), "p95");
-        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.99), "p99");
+        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.50),
+                    "median");
+        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.75),
+                    "p75");
+        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.95),
+                    "p95");
+        result.push(weighted_tail_quantile(acc, bacc::quantile_probability = 0.99),
+                    "p99");
 
         return result;
     }

@@ -15,6 +15,7 @@
 #include <thread>
 
 #include <boost/container/flat_map.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/log/attributes/function.hpp>
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
@@ -34,7 +35,6 @@
 #include <boost/log/utility/setup/console.hpp>
 #include <boost/log/utility/setup/file.hpp>
 #include <boost/log/utility/value_ref.hpp>
-#include <boost/filesystem.hpp>
 
 #include <boost/phoenix/bind.hpp>
 
@@ -53,8 +53,8 @@ namespace commonpp
 
 std::ostream& operator<<(std::ostream& strm, LoggingLevel level)
 {
-    static const char* LEVELS[] = {
-        "trace", "debug", "info", "warning", "error", "fatal"};
+    static const char* LEVELS[] = {"trace",   "debug", "info",
+                                   "warning", "error", "fatal"};
 
     if (static_cast<std::size_t>(level) < get_array_size(LEVELS))
     {
@@ -160,8 +160,8 @@ void init_logging()
     severity_by_channel.set_default(true);
 
     core->add_global_attribute("Scope", attrs::named_scope());
-    core->add_global_attribute("ThreadName",
-                               attrs::make_function(&thread::get_current_thread_name));
+    core->add_global_attribute(
+        "ThreadName", attrs::make_function(&thread::get_current_thread_name));
     set_logging_level(trace);
 
     ::atexit(&flush_logs);
@@ -249,8 +249,7 @@ void add_file_sink_rotate(const std::string& path,
     if (max_size)
     {
         backend = boost::make_shared<sinks::text_file_backend>(
-            keywords::file_name = path,
-            keywords::rotation_size = max_size,
+            keywords::file_name = path, keywords::rotation_size = max_size,
             keywords::time_based_rotation =
                 sinks::file::rotation_at_time_interval(period));
     }

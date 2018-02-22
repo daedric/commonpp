@@ -10,12 +10,12 @@
  */
 #pragma once
 
+#include <chrono>
 #include <string>
 #include <vector>
-#include <chrono>
 
-#include "detail/types.hpp"
 #include "MetricTag.hpp"
+#include "detail/types.hpp"
 
 namespace commonpp
 {

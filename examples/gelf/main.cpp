@@ -9,11 +9,12 @@
  *
  */
 
-#include "commonpp/core/LoggingInterface.hpp"
-#include "commonpp/thread/ThreadPool.hpp"
 #include <chrono>
 #include <iostream>
 #include <thread>
+
+#include "commonpp/core/LoggingInterface.hpp"
+#include "commonpp/thread/ThreadPool.hpp"
 
 int main(int, char *[])
 {
@@ -25,16 +26,15 @@ int main(int, char *[])
 
     commonpp::core::set_logging_level(commonpp::LoggingLevel::trace);
 
-    GLOG(trace)   << "A trace message";
-    GLOG(debug)   << "A debug message";
-    GLOG(info)    << "An info message";
+    GLOG(trace) << "A trace message";
+    GLOG(debug) << "A debug message";
+    GLOG(info) << "An info message";
     GLOG(warning) << "A warning message";
-    GLOG(error)   << "An error message";
-    GLOG(fatal)   << "A fatal message";
+    GLOG(error) << "An error message";
+    GLOG(fatal) << "A fatal message";
 
     commonpp::thread::ThreadPool pool(4);
-    pool.start([]() 
-    {
+    pool.start([]() {
         for (int i = 0; i < 10000; i++)
         {
             // This message will be sent in chunked format.

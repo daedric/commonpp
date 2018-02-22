@@ -69,4 +69,3 @@ BOOST_AUTO_TEST_CASE(basic)
 
     std::cout << TestOS(Test::O1, Test::O6) << std::endl;
 }
-

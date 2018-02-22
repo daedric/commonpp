@@ -38,20 +38,23 @@ struct get_integral_constant_base
         typename std::conditional<has_true_type, std::true_type, std::false_type>::type;
 };
 
-}// namespace detail
+} // namespace detail
 
 template <typename C, typename T, typename F>
 struct conditional
-    : conditional<typename detail::get_integral_constant_base<C>::type, T, F>
-{};
+: conditional<typename detail::get_integral_constant_base<C>::type, T, F>
+{
+};
 
 template <typename T, typename F>
 struct conditional<std::true_type, T, F> : std::conditional<true, T, F>
-{};
+{
+};
 
 template <typename T, typename F>
 struct conditional<std::false_type, T, F> : std::conditional<false, T, F>
-{};
+{
+};
 
 template <bool C, typename T, typename F>
 using conditional_c = std::conditional<C, T, F>;

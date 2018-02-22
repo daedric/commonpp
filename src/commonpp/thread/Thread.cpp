@@ -22,15 +22,15 @@
 # include <cstring>
 #endif
 
-#include <thread>
 #include <sstream>
+#include <thread>
 
 #ifndef HAVE_THREAD_LOCAL_SPECIFIER
 # include <boost/thread/tss.hpp>
 #endif
 
-#include "detail/logger.hpp"
 #include "commonpp/core/LoggingInterface.hpp"
+#include "detail/logger.hpp"
 
 namespace commonpp
 {
@@ -146,4 +146,4 @@ bool set_affinity_to_logical_core(int, std::thread&)
 #endif
 
 } // namespace thread
-} // namespace httpp
+} // namespace commonpp

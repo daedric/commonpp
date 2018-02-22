@@ -31,9 +31,9 @@
 # include <atomic>
 #endif
 
-#include <commonpp/metric/detail/types.hpp>
 #include <commonpp/core/FloatingArithmeticTools.hpp>
 #include <commonpp/metric/MetricValue.hpp>
+#include <commonpp/metric/detail/types.hpp>
 
 namespace commonpp
 {
@@ -52,7 +52,8 @@ struct Counter
     Counter(Callable fn, std::string name = "")
     : value_(fn)
     , name_(move(name))
-    {}
+    {
+    }
 
     template <typename T,
               typename = typename std::enable_if<std::is_integral<T>::value>::type>
@@ -102,7 +103,9 @@ public:
 
     uintmax_t sum() const;
     const std::string& name() const noexcept
-    { return name_; }
+    {
+        return name_;
+    }
 
 private:
 #if SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_SPINLOCK

@@ -8,10 +8,13 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
+
 #include "commonpp/metric/MetricValue.hpp"
 
 #include <stdexcept>
+
 #include <boost/algorithm/string.hpp>
+
 #include "commonpp/core/LoggingInterface.hpp"
 #include "commonpp/core/string/std_tostring.hpp"
 #include "commonpp/core/string/stringify.hpp"
@@ -59,7 +62,7 @@ bool MetricValue::empty() const
 #define CHECK_NO_VALUE                                                         \
     do                                                                         \
     {                                                                          \
-        if (get_no_metric_marker<decltype(value)>() == value)                     \
+        if (get_no_metric_marker<decltype(value)>() == value)                  \
         {                                                                      \
             return *this;                                                      \
         }                                                                      \
@@ -175,8 +178,7 @@ size_t MetricValue::metrics() const noexcept
 using PairSSVector = std::vector<std::pair<std::string, std::string>>;
 
 template <typename T>
-std::string MetricValue::to_graphite(const MetricTag& tag,
-                                     const T& vector) const
+std::string MetricValue::to_graphite(const MetricTag& tag, const T& vector) const
 {
     std::string result;
 
@@ -254,7 +256,6 @@ std::string MetricValue::to_influx<PairSBVector>(const MetricTag&,
 {
     std::string result;
 
-
     for (const auto& d : vector)
     {
         result += result.empty() ? "" : ",";
@@ -320,9 +321,10 @@ std::string MetricValue::toInfluxFormat(const MetricTag& tag,
     result += to_influx(tag_with_prefix, strings_);
 
     using Precision = std::chrono::nanoseconds;
-    result += " " + string::stringify(std::chrono::duration_cast<Precision>(
-                                          capture_time_.time_since_epoch())
-                                          .count()) +
+    result += " " +
+              string::stringify(std::chrono::duration_cast<Precision>(
+                                    capture_time_.time_since_epoch())
+                                    .count()) +
               "\n";
 
     return result;

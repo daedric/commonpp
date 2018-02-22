@@ -8,12 +8,10 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
-#include <ctime>
-#include <chrono>
-#include <iomanip>
-#include <boost/asio/ip/host_name.hpp>
 
-#include "commonpp/core/Utils.hpp"
+#include <chrono>
+
+#include <boost/asio/ip/host_name.hpp>
 
 namespace commonpp
 {

@@ -16,11 +16,11 @@
 # error "Current platform cannot use the ThreadTimer"
 #endif
 
-#include <ctime>
+#include <boost/timer/timer.hpp>
 #include <chrono>
+#include <ctime>
 #include <system_error>
 #include <thread>
-#include <boost/timer/timer.hpp>
 
 namespace commonpp
 {

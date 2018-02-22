@@ -57,7 +57,5 @@ bool make_bool_functor(Callable&& call)
     return detail::BoolWrapperCaller<true, Callable, ResultType>::call(call);
 }
 
-
-
 } // namespace traits
 } // namespace commonpp

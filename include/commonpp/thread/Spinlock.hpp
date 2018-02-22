@@ -10,8 +10,8 @@
  */
 #pragma once
 
-#include <thread>
 #include <iostream>
+#include <thread>
 
 #define SPINLOCK_USE_ATOMIC 1
 #define SPINLOCK_USE_TBB 2
@@ -77,7 +77,7 @@ struct _spinlock
 #elif SPINLOCK_BACKEND == SPINLOCK_USE_TBB
 namespace detail
 {
-    using _spinlock = tbb::spin_mutex;
+using _spinlock = tbb::spin_mutex;
 } // namespace detail
 #endif
 

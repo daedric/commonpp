@@ -35,6 +35,5 @@ join(char j, const std::string& p1, const std::string& p2, Args&&... args)
     return join(j, p1 + j + p2, std::forward<Args>(args)...);
 }
 
-
 } // namespace string
 } // namespace commonpp

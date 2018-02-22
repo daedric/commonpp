@@ -12,11 +12,10 @@
 #pragma once
 #include <string>
 
-
 #include <boost/algorithm/string.hpp>
 
-#include <commonpp/core/string/stringify.hpp>
 #include <commonpp/core/LoggingInterface.hpp>
+#include <commonpp/core/string/stringify.hpp>
 #include <commonpp/net/http/URL.hpp>
 
 #include "logger.hpp"

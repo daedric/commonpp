@@ -13,8 +13,8 @@
 #include <functional>
 #include <utility>
 
-#include <commonpp/metric/detail/types.hpp>
 #include <commonpp/metric/MetricValue.hpp>
+#include <commonpp/metric/detail/types.hpp>
 
 namespace commonpp
 {

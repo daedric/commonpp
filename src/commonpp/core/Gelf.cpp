@@ -10,10 +10,11 @@
  */
 
 #include "commonpp/core/LoggingInterface.hpp"
-#include "commonpp/core/Utils.hpp"
-#include "commonpp/core/config.hpp"
-#include "commonpp/core/string/json_escape.hpp"
-#include "commonpp/net/Connection.hpp"
+
+#include <iostream>
+#include <random>
+#include <stdint.h>
+#include <string>
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/udp.hpp>
@@ -37,12 +38,11 @@
 #include <boost/log/utility/formatting_ostream_fwd.hpp>
 #include <boost/log/utility/setup/common_attributes.hpp>
 #include <boost/log/utility/setup/formatter_parser.hpp>
-#include <iostream>
 
-#include <iostream>
-#include <random>
-#include <stdint.h>
-#include <string>
+#include "commonpp/core/Utils.hpp"
+#include "commonpp/core/config.hpp"
+#include "commonpp/core/string/json_escape.hpp"
+#include "commonpp/net/Connection.hpp"
 
 namespace logging = boost::log;
 namespace sinks = logging::sinks;
@@ -96,7 +96,7 @@ public:
 };
 
 class GelfUDPBackend
-    : public sinks::basic_formatted_sink_backend<char, sinks::synchronized_feeding>
+: public sinks::basic_formatted_sink_backend<char, sinks::synchronized_feeding>
 {
     boost::asio::io_service io_service_;
     std::unique_ptr<commonpp::net::UDPConnection> conn_;
@@ -140,7 +140,8 @@ public:
         const auto chunks = 1 + ceil(payload.size() / MAX_PACKET_SIZE);
         if (chunks > 128)
         {
-            std::cerr << "Error occured while sending GELF message: Message too big";
+            std::cerr
+                << "Error occured while sending GELF message: Message too big";
             return;
         }
         const auto num_chunks = static_cast<uint8_t>(chunks);
@@ -175,17 +176,19 @@ public:
         }
     }
 
-    bool send(const void * data, size_t size)
-    {	
+    bool send(const void* data, size_t size)
+    {
         if (!conn_)
         {
             try
-            { 
-                conn_ = commonpp::net::UDPConnection::createConnection(io_service_, host_, port_);
-            }
-            catch (const std::exception & e)
             {
-                std::cerr << "Cannot connect to " << host_ << ":" << port_ << " " << e.what();
+                conn_ = commonpp::net::UDPConnection::createConnection(
+                    io_service_, host_, port_);
+            }
+            catch (const std::exception& e)
+            {
+                std::cerr << "Cannot connect to " << host_ << ":" << port_
+                          << " " << e.what();
                 return false;
             }
         }
@@ -195,13 +198,12 @@ public:
         if (ec)
         {
             std::cerr << "Error occured while sending GELF message: "
-                << ec.message() << std::endl;
+                      << ec.message() << std::endl;
             conn_.reset();
             return false;
         }
         return true;
     }
-    
 
     uint64_t get_message_id()
     {

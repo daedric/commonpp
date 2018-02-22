@@ -9,6 +9,7 @@
  *
  */
 #pragma once
+
 #include <hwloc.h>
 #include <vector>
 

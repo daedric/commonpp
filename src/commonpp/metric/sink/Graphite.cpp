@@ -8,6 +8,7 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
+
 #include "commonpp/metric/sink/Graphite.hpp"
 
 #include <algorithm>

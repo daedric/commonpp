@@ -11,16 +11,16 @@
 
 #include <commonpp/core/Utils.hpp>
 #include <commonpp/metric/Metrics.hpp>
+#include <commonpp/metric/reservoir/ExponentiallyDecaying.hpp>
 #include <commonpp/metric/sink/Console.hpp>
 #include <commonpp/metric/sink/Graphite.hpp>
 #include <commonpp/metric/sink/InfluxDB.hpp>
 #include <commonpp/metric/type/TimeScope.hpp>
-#include <commonpp/metric/reservoir/ExponentiallyDecaying.hpp>
-#include "commonpp/core/LoggingInterface.hpp"
+#include <commonpp/core/LoggingInterface.hpp>
 
-using commonpp::metric::Metrics;
 using commonpp::metric::MetricTag;
 using commonpp::metric::MetricValue;
+using commonpp::metric::Metrics;
 using commonpp::metric::sink::Console;
 using commonpp::metric::sink::Graphite;
 using commonpp::metric::sink::InfluxDB;
@@ -32,8 +32,7 @@ using Counter = Metrics::Counter<>;
 using DescStat = Metrics::DescStat;
 using Gauge = Metrics::Gauge<>;
 using TimeScope =
-    commonpp::metric::type::TimeScope<ExponentiallyDecaying<>,
-                                      std::chrono::seconds>;
+    commonpp::metric::type::TimeScope<ExponentiallyDecaying<>, std::chrono::seconds>;
 
 int main(int, char *[])
 {
@@ -53,8 +52,8 @@ int main(int, char *[])
 
     Console sink;
     Graphite gsink(pool.getService(), prefix, "localhost", "2003");
-    InfluxDB isink(pool.getService(), prefix, "commonpp_example",
-                       "localhost", "8086");
+    InfluxDB isink(pool.getService(), prefix, "commonpp_example", "localhost",
+                   "8086");
     metrics.addMetricsReceiver(std::ref(sink));
     metrics.addMetricsReceiver(std::ref(gsink));
     metrics.addMetricsReceiver(std::ref(isink));
@@ -64,18 +63,8 @@ int main(int, char *[])
     parent += {"host", commonpp::get_hostname()};
 
     uintmax_t i = 0;
-    metrics.add(parent("counter"), Counter(
-                                       [&i]
-                                       {
-                                           return i;
-                                       },
-                                       "counter"));
-    metrics.add(parent("gauge"), Gauge(
-                                     [&i]
-                                     {
-                                         return i;
-                                     },
-                                     "gauge"));
+    metrics.add(parent("counter"), Counter([&i] { return i; }, "counter"));
+    metrics.add(parent("gauge"), Gauge([&i] { return i; }, "gauge"));
 
     ExponentiallyDecaying<> reservoir;
     ExponentiallyDecaying<> timer_reservoir;

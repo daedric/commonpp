@@ -9,8 +9,8 @@
  */
 
 #include <memory>
-#include <boost/asio.hpp>
 
+#include <boost/asio.hpp>
 
 namespace commonpp
 {
@@ -39,10 +39,11 @@ struct Connection
         typename Protocol::resolver resolver(service);
         typename Protocol::resolver::query query(Protocol::v4(), host, port);
         typename Protocol::resolver::iterator iterator = resolver.resolve(query);
-        std::unique_ptr<Connection<Protocol>> conn(new Connection<Protocol>(service));
+        std::unique_ptr<Connection<Protocol>> conn(
+            new Connection<Protocol>(service));
         boost::asio::connect(conn->socket, iterator);
         return conn;
-    } 
+    }
 
     typename Protocol::socket socket;
 };
@@ -50,5 +51,5 @@ struct Connection
 using UDPConnection = Connection<boost::asio::ip::udp>;
 using TCPConnection = Connection<boost::asio::ip::tcp>;
 
-} // net
-} // commonpp
+} // namespace net
+} // namespace commonpp

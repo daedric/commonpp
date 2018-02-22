@@ -13,10 +13,10 @@
 #include <atomic>
 #include <functional>
 
-#include <commonpp/core/config.hpp>
-#include "detail/logger.hpp"
 #include "commonpp/core/LoggingInterface.hpp"
 #include "commonpp/core/Utils.hpp"
+#include "commonpp/core/config.hpp"
+#include "detail/logger.hpp"
 
 #if HAVE_HWLOC == 1
 # include <hwloc.h>
@@ -33,7 +33,9 @@ namespace detail
 template <ThreadPool::ThreadDispatchPolicy T>
 struct ThreadDispatcher
 {
-    void set_affinity(std::thread&){}
+    void set_affinity(std::thread&)
+    {
+    }
 };
 
 #if HAVE_HWLOC == 1
@@ -67,10 +69,7 @@ ThreadPool::ThreadPool(size_t nb_thread, std::string name, size_t nb_services)
 : nb_thread_(nb_thread)
 , nb_services_(nb_services)
 , name_(std::move(name))
-, picker_([this]
-          {
-              return createPicker(services_);
-          })
+, picker_([this] { return createPicker(services_); })
 {
     if (nb_services < 1)
     {
@@ -92,23 +91,23 @@ ThreadPool::ThreadPool(size_t nb_thread, std::string name, size_t nb_services)
     services_.reserve(nb_services);
     works_.reserve(nb_services);
     const std::size_t concurrency_hint = nb_thread / nb_services;
-    std::generate_n(std::back_inserter(services_), nb_services, [concurrency_hint]
-                    {
-                        return std::make_shared<boost::asio::io_service>(concurrency_hint);
-                    });
-   }
+    std::generate_n(std::back_inserter(services_), nb_services, [concurrency_hint] {
+        return std::make_shared<boost::asio::io_service>(concurrency_hint);
+    });
+}
 
-   ThreadPool::ThreadPool(size_t nb_thread,
-                          boost::asio::io_service& service,
-                          std::string name)
-   : nb_thread_(nb_thread)
-   , nb_services_(1)
-   , name_(std::move(name))
-   , services_{
-         {
-             std::addressof(service), get_fake_delete(std::addressof(service)),
-         },
-     }
+ThreadPool::ThreadPool(size_t nb_thread,
+                       boost::asio::io_service& service,
+                       std::string name)
+: nb_thread_(nb_thread)
+, nb_services_(1)
+, name_(std::move(name))
+, services_{
+      {
+          std::addressof(service),
+          get_fake_delete(std::addressof(service)),
+      },
+  }
 {
 }
 
@@ -154,11 +153,11 @@ void ThreadPool::start(ThreadInit fct, ThreadDispatchPolicy policy)
 
         switch (policy)
         {
-            default:
-                LOG(thread_logger, warning)
-                    << "Unknown thread dispatch policy: " << enum_to_number(policy);
-                binder = [](std::thread&) {};
-                break;
+        default:
+            LOG(thread_logger, warning)
+                << "Unknown thread dispatch policy: " << enum_to_number(policy);
+            binder = [](std::thread&) {};
+            break;
         case ThreadDispatchPolicy::Random:
             binder = std::bind(&RandomDispatcher::set_affinity,
                                RandomDispatcher{}, std::placeholders::_1);
@@ -175,36 +174,34 @@ void ThreadPool::start(ThreadInit fct, ThreadDispatchPolicy policy)
     }
 
     int i = 0;
-    std::generate_n(std::back_inserter(works_), nb_services_, [this, &i]
-                    {
-                        return std::unique_ptr<boost::asio::io_service::work>(
-                            new boost::asio::io_service::work(*services_[i++]));
-                    });
+    std::generate_n(std::back_inserter(works_), nb_services_, [this, &i] {
+        return std::unique_ptr<boost::asio::io_service::work>(
+            new boost::asio::io_service::work(*services_[i++]));
+    });
 
     threads_.reserve(nb_thread_);
     for (size_t i = 0; i < nb_thread_; ++i)
     {
-        threads_.emplace_back(
-            &ThreadPool::run, this, std::ref(getService(i % nb_services_)),
-            [this, fct, i]
-            {
-                auto suffix = "#" + std::to_string(i) + "|S#" +
-                              std::to_string(i % nb_services_);
-                if (name_.empty())
-                {
-                    std::string default_name = "PTH" + suffix;
-                    set_current_thread_name(default_name);
-                }
-                else
-                {
-                    set_current_thread_name(name_ + suffix);
-                }
+        threads_.emplace_back(&ThreadPool::run, this,
+                              std::ref(getService(i % nb_services_)),
+                              [this, fct, i] {
+                                  auto suffix = "#" + std::to_string(i) + "|S#" +
+                                                std::to_string(i % nb_services_);
+                                  if (name_.empty())
+                                  {
+                                      std::string default_name = "PTH" + suffix;
+                                      set_current_thread_name(default_name);
+                                  }
+                                  else
+                                  {
+                                      set_current_thread_name(name_ + suffix);
+                                  }
 
-                if (fct)
-                {
-                    fct();
-                }
-            });
+                                  if (fct)
+                                  {
+                                      fct();
+                                  }
+                              });
 
         binder(threads_.back());
     }

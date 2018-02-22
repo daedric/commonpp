@@ -64,7 +64,7 @@ Cores::Cores(const Cores& cores)
     get_cores();
 }
 
-Cores& Cores:: operator=(const Cores& cores)
+Cores& Cores::operator=(const Cores& cores)
 {
     opt_ = cores.opt_;
     hwloc_topology_dup(&topology_, cores.topology_);

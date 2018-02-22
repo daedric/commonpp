@@ -10,21 +10,21 @@
  */
 #pragma once
 
-#include <cstddef>
-#include <vector>
-#include <thread>
-#include <memory>
-#include <functional>
-#include <string>
 #include <atomic>
+#include <cstddef>
+#include <functional>
+#include <memory>
+#include <string>
+#include <thread>
+#include <vector>
 
-#include <boost/asio/io_service.hpp>
 #include <boost/asio/deadline_timer.hpp>
+#include <boost/asio/io_service.hpp>
 #include <tbb/enumerable_thread_specific.h>
 
 #include <commonpp/core/RandomValuePicker.hpp>
-#include <commonpp/core/traits/is_duration.hpp>
 #include <commonpp/core/traits/function_wrapper.hpp>
+#include <commonpp/core/traits/is_duration.hpp>
 
 #include "Thread.hpp"
 
@@ -125,30 +125,27 @@ private:
 };
 
 template <typename Duration, typename Callable>
-void ThreadPool::schedule_timer(TimerPtr& timer,
-                                Duration delay,
-                                Callable&& callable)
+void ThreadPool::schedule_timer(TimerPtr& timer, Duration delay, Callable&& callable)
 {
     timer->expires_from_now(boost::posix_time::milliseconds(
         std::chrono::duration_cast<std::chrono::milliseconds>(delay).count()));
     timer->async_wait([this, delay, timer,
-                       callable](const boost::system::error_code& error) mutable
-                      {
-                          if (error)
-                          {
-                              if (error != boost::asio::error::operation_aborted)
-                              {
-                                  throw std::runtime_error(error.message());
-                              }
+                       callable](const boost::system::error_code& error) mutable {
+        if (error)
+        {
+            if (error != boost::asio::error::operation_aborted)
+            {
+                throw std::runtime_error(error.message());
+            }
 
-                              return;
-                          }
+            return;
+        }
 
-                          if (traits::make_bool_functor(callable))
-                          {
-                              schedule_timer(timer, delay, callable);
-                          }
-                      });
+        if (traits::make_bool_functor(callable))
+        {
+            schedule_timer(timer, delay, callable);
+        }
+    });
 }
 
 template <typename Duration, typename Callable>

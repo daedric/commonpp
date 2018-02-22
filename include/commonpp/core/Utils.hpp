@@ -10,10 +10,10 @@
  */
 #pragma once
 
-#include <string>
-#include <functional>
-#include <type_traits>
 #include <chrono>
+#include <functional>
+#include <string>
+#include <type_traits>
 
 namespace commonpp
 {

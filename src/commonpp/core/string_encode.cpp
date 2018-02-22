@@ -8,6 +8,7 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
+
 #include "commonpp/core/string/encode.hpp"
 
 #include <cstdlib>
@@ -56,7 +57,7 @@ std::string hex_encode(const uint8_t* it, const uint8_t* end)
 {
     std::string str;
     str.reserve((end - it) * 2);
-    for(; it != end; ++it)
+    for (; it != end; ++it)
     {
         str += HEXTABLE[*it];
     }
@@ -64,8 +65,7 @@ std::string hex_encode(const uint8_t* it, const uint8_t* end)
     return str;
 }
 
-
-std::vector<uint8_t> hex_decode(const std::string & str)
+std::vector<uint8_t> hex_decode(const std::string& str)
 {
     return hex_decode(str.data(), str.data() + str.size());
 }
@@ -98,7 +98,7 @@ std::vector<uint8_t> hex_decode(const char* it, const char* end)
 namespace bai = boost::archive::iterators;
 
 // inspiration from here: http://stackoverflow.com/a/16775827
-std::string base64_encode(const uint8_t* it, const uint8_t* end) 
+std::string base64_encode(const uint8_t* it, const uint8_t* end)
 {
     static const char* padding[] = {"", "==", "="};
 
@@ -143,4 +143,3 @@ std::vector<uint8_t> base64_decode(const char* begin, const char* end)
 
 } // namespace string
 } // namespace commonpp
-

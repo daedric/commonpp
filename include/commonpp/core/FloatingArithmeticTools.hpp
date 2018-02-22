@@ -10,9 +10,9 @@
  */
 #pragma once
 
-#include <type_traits>
-#include <limits>
 #include <cmath>
+#include <limits>
+#include <type_traits>
 
 namespace commonpp
 {

@@ -10,8 +10,8 @@
  */
 #pragma once
 
-#include <string>
 #include <chrono>
+#include <string>
 
 namespace std
 {
@@ -30,4 +30,3 @@ std::string to_string(const duration<Rep, Ratio>& duration)
 
 } // namespace chrono
 } // namespace std
-

@@ -8,7 +8,7 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
-#define COMMONPP_COUNTER_CPP
+
 #include "commonpp/metric/type/Counter.hpp"
 
 namespace commonpp
@@ -20,10 +20,7 @@ namespace type
 
 SharedCounter::SharedCounter(std::string name)
 #if SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_TBB
-: counter_([]
-           {
-               return uintmax_t(0);
-           })
+: counter_([] { return uintmax_t(0); })
 #elif SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_SPINLOCK
 : counter_(0)
 #elif SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_ATOMIC
@@ -60,10 +57,8 @@ void SharedCounter::inc(uintmax_t inc) const
 uintmax_t SharedCounter::sum() const
 {
 #if SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_TBB
-    return counter_.combine([](uintmax_t lhs, uintmax_t rhs)
-                            {
-                                return lhs + rhs;
-                            });
+    return counter_.combine(
+        [](uintmax_t lhs, uintmax_t rhs) { return lhs + rhs; });
 #elif SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_SPINLOCK
     std::lock_guard<thread::Spinlock> lock(mutex_);
     return counter_;

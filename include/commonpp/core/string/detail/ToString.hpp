@@ -10,8 +10,8 @@
  */
 #pragma once
 
-#include <type_traits>
 #include <boost/lexical_cast.hpp>
+#include <type_traits>
 
 #include <commonpp/core/traits/conditional.hpp>
 #include <commonpp/core/traits/to_string.hpp>
@@ -44,8 +44,7 @@ struct NsStringify // Argument-dependent name lookup
 struct MemFnStringify
 {
     template <typename U>
-    static auto stringify(U&& value)
-        -> decltype(value.to_string())
+    static auto stringify(U&& value) -> decltype(value.to_string())
     {
         return value.to_string();
     }

@@ -12,8 +12,9 @@
 
 #include <iosfwd>
 #include <type_traits>
-#include <commonpp/core/config.hpp>
+
 #include <commonpp/core/Utils.hpp>
+#include <commonpp/core/config.hpp>
 
 #if BOOST_CLANG == 1 && BOOST_MAJOR == 1 && BOOST_MAJOR <= 55
 # if defined(BOOST_PP_VARIADICS)
@@ -27,10 +28,9 @@
 # endif
 #endif
 
-
-#include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/stringize.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
 namespace commonpp

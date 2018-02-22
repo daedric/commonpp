@@ -13,18 +13,18 @@
 #include <chrono>
 #include <functional>
 #include <memory>
+#include <mutex>
+#include <string>
 #include <tuple>
 #include <vector>
-#include <string>
-#include <mutex>
 
 #include <boost/signals2.hpp>
 
 #include <commonpp/thread/ThreadPool.hpp>
 
-#include "detail/types.hpp"
 #include "MetricTag.hpp"
 #include "MetricValue.hpp"
+#include "detail/types.hpp"
 #include "type/Counter.hpp"
 #include "type/DescStat.hpp"
 #include "type/Gauge.hpp"
@@ -65,7 +65,6 @@ public:
     template <typename StatsSummary, typename Reservoir>
     void add(MetricTag tag, const Reservoir& h);
     void add(MetricTag tag, SharedCounter& fn);
-
 
     template <typename T>
     void add(MetricTag metric_tag, Gauge<T> gauge)
@@ -117,10 +116,8 @@ template <typename StatsSummary, typename Reservoir>
 void Metrics::add(MetricTag tag, const Reservoir& r)
 {
     std::lock_guard<std::mutex> lock(counters_lock_);
-    counters_.emplace_back(std::move(tag), [&r]
-                           {
-                               return StatsSummary::getMetrics(r);
-                           });
+    counters_.emplace_back(std::move(tag),
+                           [&r] { return StatsSummary::getMetrics(r); });
 }
 
 } // namespace metric

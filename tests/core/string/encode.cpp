@@ -8,8 +8,8 @@
  *
  */
 
-#include <iostream>
 #include <boost/test/unit_test.hpp>
+#include <iostream>
 
 #include <commonpp/core/string/encode.hpp>
 
@@ -18,7 +18,6 @@ using namespace commonpp::string;
 BOOST_AUTO_TEST_CASE(hex_encode_decode)
 {
     std::string test("deafbeef");
-   
+
     BOOST_CHECK_EQUAL(test, hex_encode(hex_decode(test)));
 }
-

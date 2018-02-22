@@ -24,9 +24,9 @@ std::string get_current_date()
 
     std::tm tm;
 #ifdef WIN32
-	_gmtime64_s(&tm, &current_time);
+    _gmtime64_s(&tm, &current_time);
 #else
-	::gmtime_r(&current_time, &tm);
+    ::gmtime_r(&current_time, &tm);
 #endif
 
     char buff[64] = {0};
@@ -46,9 +46,9 @@ std::string get_date(std::chrono::system_clock::time_point time_point)
     auto sec = static_cast<time_t>(seconds.count());
     std::tm tm;
 #ifdef WIN32
-	_gmtime64_s(&tm, &sec);
+    _gmtime64_s(&tm, &sec);
 #else
-	::gmtime_r(&sec, &tm);
+    ::gmtime_r(&sec, &tm);
 #endif
 
     char buff[32] = {0};

@@ -12,8 +12,8 @@
 
 #include <cassert>
 #include <iterator>
-#include <random>
 #include <memory>
+#include <random>
 
 #include <commonpp/core/config.hpp>
 
@@ -28,14 +28,16 @@ struct RandomValuePicker
     , rd(std::make_shared<std::random_device>())
     , gen(rd->operator()())
     , distribution(0, 1)
-    {}
+    {
+    }
 
     RandomValuePicker(const Collection& coll)
     : collection(std::addressof(coll))
     , rd(std::make_shared<std::random_device>())
     , gen(rd->operator()())
     , distribution(0, std::distance(std::begin(coll), std::end(coll)) - 1)
-    {}
+    {
+    }
 
     const Value& operator()()
     {

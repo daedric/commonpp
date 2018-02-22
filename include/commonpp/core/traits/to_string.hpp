@@ -11,9 +11,9 @@
 
 #pragma once
 
+#include "conditional.hpp"
 #include <string>
 #include <type_traits>
-#include "conditional.hpp"
 
 namespace commonpp
 {
@@ -62,24 +62,25 @@ static constexpr bool has_to_string_memfn(long)
     return false;
 }
 
-
 } // namespace detail
 
 template <typename T>
 struct has_std_to_string
-    : conditional_c_t<detail::has_std_to_string<T>(0), std::true_type, std::false_type>
-{};
+: conditional_c_t<detail::has_std_to_string<T>(0), std::true_type, std::false_type>
+{
+};
 
 template <typename T>
 struct has_to_string
-    : conditional_c_t<detail::has_to_string<T>(0), std::true_type, std::false_type>
-{};
+: conditional_c_t<detail::has_to_string<T>(0), std::true_type, std::false_type>
+{
+};
 
 template <typename T>
 struct has_to_string_memfn
-    : conditional_c_t<detail::has_to_string_memfn<T>(0), std::true_type, std::false_type>
-{};
+: conditional_c_t<detail::has_to_string_memfn<T>(0), std::true_type, std::false_type>
+{
+};
 
 } // namespace traits
 } // namespace commonpp
-

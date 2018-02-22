@@ -10,8 +10,9 @@
  */
 #include "commonpp/net/http/URL.hpp"
 
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
+
 #include "commonpp/core/string/encode.hpp"
 
 namespace commonpp
@@ -26,7 +27,6 @@ static inline bool is_allowed_character(uint8_t c)
     static const char* EXTRA = "-_.!~*\\()";
     return ::isalnum(c) || strchr(EXTRA, c) != nullptr;
 }
-
 
 std::string url_encode(const char* begin, const char* end)
 {

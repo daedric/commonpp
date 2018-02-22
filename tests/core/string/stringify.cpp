@@ -8,14 +8,16 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
-#include <iostream>
 #include <boost/test/unit_test.hpp>
+#include <iostream>
 
 #include <commonpp/core/string/stringify.hpp>
 
 using namespace commonpp::string;
 
-struct T{};
+struct T
+{
+};
 std::ostream& operator<<(std::ostream& os, T const&)
 {
     return os << "T";

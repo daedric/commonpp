@@ -10,9 +10,10 @@
  */
 
 #include "commonpp/net/http/Response.hpp"
+
 #include <cstdlib>
-#include <sstream>
 #include <functional>
+#include <sstream>
 
 namespace commonpp
 {
@@ -149,10 +150,8 @@ void Response::parse_headers(Response& response, const char*& it, const char* en
         StringRef key;
         StringRef value;
 
-        auto key_end = std::find_if(it, end, [](const char c)
-                                    {
-                                        return strchr(": \r", c) != nullptr;
-                                    });
+        auto key_end = std::find_if(
+            it, end, [](const char c) { return strchr(": \r", c) != nullptr; });
 
         key = StringRef(it, std::distance(it, key_end));
 

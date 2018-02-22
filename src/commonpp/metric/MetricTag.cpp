@@ -8,9 +8,11 @@
  * Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
  *
  */
+
 #include "commonpp/metric/MetricTag.hpp"
 
 #include <iostream>
+
 #include <boost/algorithm/string.hpp>
 
 namespace commonpp

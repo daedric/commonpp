@@ -18,6 +18,7 @@
 #endif
 
 #include <iostream>
+
 #include <commonpp/metric/type/Counter.hpp>
 #include <commonpp/thread/ThreadPool.hpp>
 
@@ -44,13 +45,12 @@ int main(int argc, char *argv[])
     std::atomic_int thread_running(0);
     for (int i = 0; i < nb_thread; ++i)
     {
-        thread_pool.post([&counter, &thread_running]
-                         {
-                             size_t i = 0;
-                             thread_running++;
-                             for (; i < ITERATION; ++i)
-                                 counter++;
-                         });
+        thread_pool.post([&counter, &thread_running] {
+            size_t i = 0;
+            thread_running++;
+            for (; i < ITERATION; ++i)
+                counter++;
+        });
     }
 
     while (thread_running.load() != nb_thread)
@@ -61,7 +61,8 @@ int main(int argc, char *argv[])
     std::cout << "Rate: "
               << (ITERATION * nb_thread) /
                      (std::chrono::duration_cast<std::chrono::seconds>(end - begin)
-                          .count()) << "i/s";
+                          .count())
+              << "i/s";
 
     return 0;
 }

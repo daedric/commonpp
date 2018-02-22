@@ -18,8 +18,12 @@ namespace metric
 namespace reservoir
 {
 
-struct WeightedReservoirTag{};
-struct SimpleReservoirTag{};
+struct WeightedReservoirTag
+{
+};
+struct SimpleReservoirTag
+{
+};
 
 } // namespace reservoir
 } // namespace metric

@@ -10,16 +10,13 @@
  */
 #pragma once
 
-#include <string>
-#include <chrono>
 #include <memory>
-#include <vector>
-#include <atomic>
-#include <mutex>
+#include <string>
 
 #include <boost/asio/ip/tcp.hpp>
-#include <commonpp/metric/detail/types.hpp>
+
 #include <commonpp/metric/Metrics.hpp>
+#include <commonpp/metric/detail/types.hpp>
 
 namespace commonpp
 {

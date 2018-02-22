@@ -11,14 +11,15 @@
 
 #pragma once
 
+#include <initializer_list>
 #include <string>
 #include <vector>
-#include <initializer_list>
 
 #include <boost/algorithm/string.hpp>
 
-#include <commonpp/core/string/stringify.hpp>
 #include <commonpp/core/LoggingInterface.hpp>
+#include <commonpp/core/string/stringify.hpp>
+
 #include "detail/validators.hpp"
 
 // Undefine the following macros that are defined in <sys/sysmacros.h>
@@ -48,7 +49,8 @@ public:
 
     Request(std::string method = "GET")
     : method_(std::move(method))
-    {}
+    {
+    }
 
     template <typename Validator, typename Serializer>
     struct Wrapper
@@ -111,7 +113,7 @@ public:
         return bodyAppend(begin(t), end(t));
     }
 
-    Request& bodyAppend(const char *str)
+    Request& bodyAppend(const char* str)
     {
         auto begin = str;
         auto end = str + ::strlen(str);

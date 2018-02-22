@@ -10,10 +10,10 @@
  */
 #pragma once
 
+#include <initializer_list>
+#include <iosfwd>
 #include <string>
 #include <vector>
-#include <iosfwd>
-#include <initializer_list>
 
 namespace commonpp
 {
@@ -36,7 +36,6 @@ public:
     MetricTag& pushTag(std::string name, std::string value);
     MetricTag& operator+=(std::initializer_list<std::string>&&);
     MetricTag operator+(const MetricTag&) const;
-
 
     friend std::ostream& operator<<(std::ostream&, const MetricTag& tag);
 

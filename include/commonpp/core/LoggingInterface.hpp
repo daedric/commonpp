@@ -11,23 +11,23 @@
 
 #pragma once
 
-#include <commonpp/core/config.hpp>
 #include <iosfwd>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include <boost/log/attributes.hpp>
+#include <boost/log/attributes/named_scope.hpp>
+#include <boost/log/attributes/scoped_attribute.hpp>
 #include <boost/log/common.hpp>
 #include <boost/log/core.hpp>
+#include <boost/log/expressions/keyword.hpp>
 #include <boost/log/sources/logger.hpp>
 #include <boost/log/sources/severity_channel_logger.hpp>
 #include <boost/log/sources/severity_feature.hpp>
 #include <boost/log/sources/severity_logger.hpp>
 
-#include <boost/log/attributes.hpp>
-#include <boost/log/attributes/named_scope.hpp>
-#include <boost/log/attributes/scoped_attribute.hpp>
-#include <boost/log/expressions/keyword.hpp>
+#include <commonpp/core/config.hpp>
 
 namespace commonpp
 {
@@ -97,7 +97,7 @@ using BasicLogger = boost::log::sources::severity_logger_mt<LoggingLevel>;
 using Logger = boost::log::sources::severity_channel_logger_mt<LoggingLevel>;
 
 #define COMPONENT(component_name)                                              \
-    (boost::log::keywords::channel=component_name)
+    (boost::log::keywords::channel = component_name)
 
 #define FWD_DECLARE_LOGGER(l, type)                                            \
     BOOST_LOG_GLOBAL_LOGGER(l##_type, type);                                   \
@@ -125,10 +125,8 @@ using Logger = boost::log::sources::severity_channel_logger_mt<LoggingLevel>;
 
 FWD_DECLARE_LOGGER(global_logger, BasicLogger);
 
-
 #define LOGGER(name, component_name)                                           \
-    ::commonpp::core::Logger name = []                                         \
-    {                                                                          \
+    ::commonpp::core::Logger name = [] {                                       \
         ::commonpp::core::Logger l(COMPONENT(component_name));                 \
         l.add_attribute("CommonppRecord",                                      \
                         boost::log::attributes::constant<bool>(true));         \
@@ -140,21 +138,23 @@ FWD_DECLARE_LOGGER(global_logger, BasicLogger);
 #define CREATE_LOGGER(logger, component_name)                                  \
     BOOST_LOG_INLINE_GLOBAL_LOGGER_CTOR_ARGS(                                  \
         logger##_type, ::commonpp::core::Logger, (COMPONENT(component_name))); \
-    static auto& logger = []() -> decltype(logger##_type::get())               \
-    {                                                                          \
+    static auto& logger = []() -> decltype(logger##_type::get()) {             \
         auto& l = logger##_type::get();                                        \
         l.add_attribute("CommonppRecord",                                      \
                         boost::log::attributes::constant<bool>(true));         \
         return l;                                                              \
     }();
 
-
 #define LOG_SEV(l, s) BOOST_LOG_SEV(l, s)
 #define GLOG_SEV(sev) LOG_SEV(::commonpp::core::global_logger, sev)
 #define LOG(l, s) BOOST_LOG_SEV(l, ::commonpp::s)
 #define GLOG(sev) LOG(::commonpp::core::global_logger, sev)
-#define TRACE(sev) ENABLE_CURRENT_FCT_LOGGING(); GLOG(sev)
-#define TRACE_LOG(l, sev) ENABLE_CURRENT_FCT_LOGGING(); LOG(l, sev)
+#define TRACE(sev)                                                             \
+    ENABLE_CURRENT_FCT_LOGGING();                                              \
+    GLOG(sev)
+#define TRACE_LOG(l, sev)                                                      \
+    ENABLE_CURRENT_FCT_LOGGING();                                              \
+    LOG(l, sev)
 
 // clang-format off
 #ifndef NDEBUG

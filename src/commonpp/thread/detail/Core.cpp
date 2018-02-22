@@ -9,8 +9,8 @@
  *
  */
 
-#include "logger.hpp"
 #include "Core.hpp"
+#include "logger.hpp"
 
 namespace commonpp
 {
@@ -22,7 +22,8 @@ namespace detail
 Core::Core(hwloc_topology_t& topology, hwloc_obj_t core)
 : topology_(topology)
 , core_(core)
-{}
+{
+}
 
 hwloc_cpuset_t const& Core::cpuset() const
 {
@@ -37,8 +38,8 @@ bool Core::bind(std::thread& thread)
     if (hwloc_set_thread_cpubind(topology_, thread.native_handle(), cpuset, 0))
     {
         auto error = errno;
-        LOG(thread_logger, warning) << "Error setting thread affinity: "
-                                    << strerror(error);
+        LOG(thread_logger, warning)
+            << "Error setting thread affinity: " << strerror(error);
         hwloc_bitmap_free(cpuset);
         return false;
     }
@@ -55,8 +56,8 @@ bool Core::bind()
     if (hwloc_set_cpubind(topology_, cpuset, 0))
     {
         auto error = errno;
-        LOG(thread_logger, warning) << "Error setting thread affinity: "
-                                    << strerror(error);
+        LOG(thread_logger, warning)
+            << "Error setting thread affinity: " << strerror(error);
         hwloc_bitmap_free(cpuset);
         return false;
     }
