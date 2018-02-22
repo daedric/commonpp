@@ -15,6 +15,7 @@
 #define SHARED_LOCK_USE_ATOMIC 2
 #define SHARED_LOCK_USE_SPINLOCK 3
 
+// clang-format off
 #ifndef SHARED_COUNTER_BACKEND
 # define SHARED_COUNTER_BACKEND SHARED_LOCK_USE_TBB
 #endif
@@ -30,6 +31,8 @@
 #elif SHARED_COUNTER_BACKEND == SHARED_LOCK_USE_ATOMIC
 # include <atomic>
 #endif
+
+// clang-format on
 
 #include <commonpp/core/FloatingArithmeticTools.hpp>
 #include <commonpp/metric/MetricValue.hpp>

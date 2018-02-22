@@ -18,10 +18,12 @@
 #include "commonpp/core/config.hpp"
 #include "detail/logger.hpp"
 
+// clang-format off
 #if HAVE_HWLOC == 1
 # include <hwloc.h>
 # include "detail/Cores.hpp"
 #endif
+// clang-format on
 
 namespace commonpp
 {

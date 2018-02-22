@@ -16,6 +16,7 @@
 #include <commonpp/core/Utils.hpp>
 #include <commonpp/core/config.hpp>
 
+// clang-format off
 #if BOOST_CLANG == 1 && BOOST_MAJOR == 1 && BOOST_MAJOR <= 55
 # if defined(BOOST_PP_VARIADICS)
 #  if !BOOST_PP_VARIADICS
@@ -27,6 +28,7 @@
 #  define BOOST_PP_VARIADICS 1
 # endif
 #endif
+// clang-format on
 
 #include <boost/preprocessor/seq/elem.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>

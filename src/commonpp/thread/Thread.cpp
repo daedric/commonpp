@@ -12,6 +12,8 @@
 
 #include "commonpp/core/config.hpp"
 
+// clang-format off
+
 #if HAVE_HWLOC == 1
 # include "detail/Cores.hpp"
 #endif
@@ -28,6 +30,7 @@
 #ifndef HAVE_THREAD_LOCAL_SPECIFIER
 # include <boost/thread/tss.hpp>
 #endif
+// clang-format on
 
 #include "commonpp/core/LoggingInterface.hpp"
 #include "detail/logger.hpp"

@@ -9,6 +9,7 @@
  *
  */
 
+#include <commonpp/core/LoggingInterface.hpp>
 #include <commonpp/core/Utils.hpp>
 #include <commonpp/metric/Metrics.hpp>
 #include <commonpp/metric/reservoir/ExponentiallyDecaying.hpp>
@@ -16,7 +17,6 @@
 #include <commonpp/metric/sink/Graphite.hpp>
 #include <commonpp/metric/sink/InfluxDB.hpp>
 #include <commonpp/metric/type/TimeScope.hpp>
-#include <commonpp/core/LoggingInterface.hpp>
 
 using commonpp::metric::MetricTag;
 using commonpp::metric::MetricValue;

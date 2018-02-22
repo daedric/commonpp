@@ -13,7 +13,7 @@
 #include <commonpp/core/config.hpp>
 
 #if not defined(HAVE_POSIX_CPU_CLOCK)
-# error "Current platform cannot use the ThreadTimer"
+#error "Current platform cannot use the ThreadTimer"
 #endif
 
 #include <boost/timer/timer.hpp>

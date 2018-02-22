@@ -16,6 +16,7 @@
 #define SPINLOCK_USE_ATOMIC 1
 #define SPINLOCK_USE_TBB 2
 
+// clang-format off
 #ifndef SPINLOCK_BACKEND
 # define SPINLOCK_BACKEND SPINLOCK_USE_TBB
 #endif
@@ -29,6 +30,7 @@
 #elif SPINLOCK_BACKEND == SPINLOCK_USE_TBB
 # include <tbb/spin_mutex.h>
 #endif
+// clang-format on
 
 namespace commonpp
 {
@@ -59,11 +61,11 @@ struct _spinlock
         while (!try_lock)
         {
 #if defined(__i386__) || defined(__x86_64__)
-# ifdef __clang__
+#ifdef __clang__
             _mm_pause();
-# else
+#else
             __builtin_ia32_pause();
-# endif
+#endif
 #endif
         }
     }
