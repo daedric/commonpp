@@ -132,6 +132,10 @@ static const auto formatter = expr::stream
                                     << expr::format_named_scope("Scope",
                                                                 keywords::format = "[%n @ %f:%l]")
                             ]
+                << expr::if_(expr::has_attr<boost::posix_time::time_duration>("Duration"))
+                            [
+                                expr::stream << "[ExecTime: " << expr::attr<boost::posix_time::time_duration>("Duration") << "]"
+                            ]
                 << ": " << expr::message;
 // clang-format on
 
