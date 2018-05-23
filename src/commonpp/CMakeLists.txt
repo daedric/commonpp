@@ -39,7 +39,3 @@ generate_export_header(commonpp)
 set_property(TARGET commonpp PROPERTY VERSION ${commonpp_VERSION})
 set_property(TARGET commonpp PROPERTY SOVERSION ${commonpp_MAJOR})
 
-install(TARGETS commonpp
-    EXPORT commonppTargets
-    LIBRARY DESTINATION ${INSTALL_LIB_DIR} COMPONENT library
-    ARCHIVE DESTINATION ${INSTALL_LIB_DIR} COMPONENT library)

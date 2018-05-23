@@ -15,16 +15,9 @@ CONFIGURE_FILE(${commonpp_CONFIG_FILE} ${commonpp_CONFIG_GENERATED})
 
 file(GLOB_RECURSE INCS "*.hpp")
 source_group(headers FILES ${INCS})
-add_custom_target(ShowSources SOURCES ${INCS})
 
+target_include_directories(commonpp PUBLIC
+    "${CMAKE_CURRENT_SOURCE_DIR}/"
+    "${CMAKE_CURRENT_BINARY_DIR}/"
+)
 
-INSTALL(FILES ${commonpp_CONFIG_GENERATED}
-    DESTINATION ${INSTALL_INCLUDE_DIR}/commonpp/core/
-    COMPONENT includes)
-
-INSTALL(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/commonpp
-    DESTINATION ${INSTALL_INCLUDE_DIR}
-    COMPONENT includes
-    FILES_MATCHING
-    REGEX "hpp$"
-    )

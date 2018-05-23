@@ -150,9 +150,6 @@ find_package(Boost 1.54.0
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
-include_directories(include/)
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
-
 set(COMMONPP_DEPS
     ${Boost_LIBRARIES}
     ${TBB_LIBRARIES}
@@ -168,8 +165,8 @@ if (${HAVE_HWLOC})
     include_directories(${HWLOC_INCLUDE_DIR})
 endif()
 
-add_subdirectory(include/)
 add_subdirectory(src/)
+add_subdirectory(include/)
 
 if (${BUILD_EXAMPLES})
     add_subdirectory(examples/)
@@ -185,79 +182,43 @@ if (${BUILD_TESTS})
 endif()
 
 
-find_program(CLANG_FORMAT
-        NAMES
-        clang-format
-        clang-format-9.0
-        clang-format-8.1
-        clang-format-8.0
-        clang-format-7.0
-        clang-format-6.2
-        clang-format-6.0
-        clang-format-5.2
-        clang-format-5.0
-        clang-format-4.0
-        clang-format-3.9
-        clang-format-3.8
+if(${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
+    find_program(CLANG_FORMAT
+            NAMES
+            clang-format
+            clang-format-9.0
+            clang-format-8.1
+            clang-format-8.0
+            clang-format-7.0
+            clang-format-6.2
+            clang-format-6.0
+            clang-format-5.2
+            clang-format-5.0
+            clang-format-4.0
+            clang-format-3.9
+            clang-format-3.8
+            )
+
+
+    if (CLANG_FORMAT)
+        file(GLOB_RECURSE ALL_SOURCE_FILES
+                src/*.cpp
+                include/*.hpp
+                tests/*.cpp
+                tests/*.hpp
+                examples/*.cpp
+                examples/*.hpp
+                bench/*.cpp
+                bench/*.hpp
         )
 
-
-if (CLANG_FORMAT)
-    file(GLOB_RECURSE ALL_SOURCE_FILES
-            src/*.cpp
-            include/*.hpp
-            tests/*.cpp
-            tests/*.hpp
-            examples/*.cpp
-            examples/*.hpp
-            bench/*.cpp
-            bench/*.hpp
-    )
-
-    add_custom_target(
-            format
-            COMMAND
-            ${CLANG_FORMAT}
-            -style=file
-            -i
-            ${ALL_SOURCE_FILES})
+        add_custom_target(
+                format
+                COMMAND
+                ${CLANG_FORMAT}
+                -style=file
+                -i
+                ${ALL_SOURCE_FILES})
+    endif()
 endif()
 
-set(commonpp_lib commonpp)
-
-export(TARGETS ${commonpp_libs}
-    FILE "${PROJECT_BINARY_DIR}/commonppTargets.cmake")
-
-export(PACKAGE commonpp)
-
-include(CMakePackageConfigHelpers)
-WRITE_BASIC_PACKAGE_VERSION_FILE("${PROJECT_BINARY_DIR}/commonppConfigVersion.cmake"
-                                 VERSION ${commonpp_VERSION}
-                                 COMPATIBILITY ExactVersion)
-
-CONFIGURE_PACKAGE_CONFIG_FILE(
-    "commonppConfig.cmake.in"
-    "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/commonppConfig.cmake"
-
-    INSTALL_DESTINATION ${INSTALL_CMAKE_DIR}
-    PATH_VARS
-        INSTALL_LIB_DIR
-        INSTALL_BIN_DIR
-        INSTALL_INCLUDE_DIR
-        INSTALL_CMAKE_DIR
-    )
-
-# Install the FooBarConfig.cmake and FooBarConfigVersion.cmake
-install(FILES
-    "${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/commonppConfig.cmake"
-    "${PROJECT_BINARY_DIR}/commonppConfigVersion.cmake"
-    DESTINATION "${INSTALL_CMAKE_DIR}"
-    COMPONENT dev)
-
-install(EXPORT commonppTargets
-    FILE "commonppTargets.cmake"
-    NAMESPACE commonpp::
-    DESTINATION ${INSTALL_CMAKE_DIR})
-
-set(CPACK_GENERATOR "TGZ")
-include(CPack)
