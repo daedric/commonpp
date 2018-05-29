@@ -31,8 +31,7 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "/usr" CACHE PATH "Default install prefix" FORCE)
 endif()
 
-set(CPP_VERSION "c++11" CACHE STRING "C++ version to use")
-set_property(CACHE CPP_VERSION PROPERTY STRINGS "c++11" "c++14" "c++1y")
+set(CMAKE_CXX_STANDARD 14 CACHE STRING "C++ standard for all targets.")
 
 set(INSTALL_LIB_DIR     lib CACHE PATH "Installation directory for libraries")
 set(INSTALL_BIN_DIR     bin CACHE PATH "Installation directory for executables")
@@ -65,7 +64,6 @@ message(STATUS "C++ Compiler ID      : ${CMAKE_CXX_COMPILER_ID}")
 
 if (${CMAKE_CXX_COMPILER_ID} MATCHES GNU OR ${CMAKE_CXX_COMPILER_ID} MATCHES Clang)
     include(CheckCXXCompilerFlag)
-    CHECK_CXX_COMPILER_FLAG("-std=${CPP_VERSION}" HAVE_CPP_VERSION)
     CHECK_CXX_COMPILER_FLAG(-Wno-unused-local-typedefs HAVE_NOUNUSED_LOCAL_TYPEDEF)
     # With clang + gcc we gave __attribute__ ((unused))
     SET(HAVE_UNUSED_ATTR 1)
@@ -82,11 +80,6 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES GNU OR ${CMAKE_CXX_COMPILER_ID} MATCHES Cla
         add_definitions("-Wno-unused-local-typedefs")
     endif()
 
-    if (NOT HAVE_CPP_VERSION)
-        message(FATAL_ERROR "No advanced standard C++ support (-std=${CPP_VERSION} not defined).")
-    endif()
-
-    add_definitions("-std=${CPP_VERSION}")
     add_definitions("-Wextra -Wall -Wno-unused-parameter")
     if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
         add_definitions("-fstack-protector-all")
