@@ -54,6 +54,12 @@ struct Options
 
     Options& operator&=(Enum f) noexcept
     {
+        flag_ &= enum_to_number(f);
+        return *this;
+    }
+
+    Options& operator|=(Enum f) noexcept
+    {
         flag_ |= enum_to_number(f);
         return *this;
     }
@@ -70,6 +76,20 @@ struct Options
         return *this;
     }
 
+    Options operator&(const Options& rhs) const noexcept
+    {
+        Options o;
+        o.flag_ = flag_ & rhs.flag_;
+        return o;
+    }
+
+    Options operator|(const Options& rhs) const noexcept
+    {
+        Options o;
+        o.flag_ = flag_ | rhs.flag_;
+        return o;
+    }
+
     bool operator&(Enum f) const noexcept
     {
         return (flag_ & enum_to_number(f)) != 0;
@@ -84,6 +104,12 @@ struct Options
     bool operator==(const Options<Enum, e...>& rhs) const noexcept
     {
         return flag() == rhs.flag();
+    }
+
+    template <Enum... e>
+    bool operator!=(const Options<Enum, e...>& rhs) const noexcept
+    {
+        return flag() != rhs.flag();
     }
 
     bool empty() const noexcept
