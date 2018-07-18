@@ -52,12 +52,6 @@ struct Options
         flag_ = set(initial_value..., v...);
     }
 
-    Options& operator&=(Enum f) noexcept
-    {
-        flag_ &= enum_to_number(f);
-        return *this;
-    }
-
     Options& operator|=(Enum f) noexcept
     {
         flag_ |= enum_to_number(f);

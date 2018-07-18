@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(basic)
     {
         Opt2 o;
 
-        o &= Test::O1;
+        o |= Test::O1;
         BOOST_CHECK(o & Test::O1);
 
         o += Test::O2;

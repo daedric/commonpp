@@ -104,7 +104,7 @@ check_have_thread_local_specifier(HAVE_THREAD_LOCAL_SPECIFIER)
 #Thread
 find_package(Threads REQUIRED)
 find_package(TBB REQUIRED)
-include_directories(${TBB_INCLUDE_DIRS})
+include_directories(SYSTEM ${TBB_INCLUDE_DIRS})
 link_directories(${TBB_LIBRARY_DIRS})
 link_directories(${TBB_DEBUG_LIBRARY_DIRS})
 
@@ -140,7 +140,7 @@ find_package(Boost 1.54.0
         system
     REQUIRED)
 
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
 set(COMMONPP_DEPS
@@ -155,7 +155,7 @@ endif()
 
 if (${HAVE_HWLOC})
     set (COMMONPP_DEPS ${COMMONPP_DEPS} ${HWLOC_LIBRARIES})
-    include_directories(${HWLOC_INCLUDE_DIR})
+    include_directories(SYSTEM ${HWLOC_INCLUDE_DIR})
 endif()
 
 add_subdirectory(src/)
