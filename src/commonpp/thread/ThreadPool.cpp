@@ -231,6 +231,11 @@ void ThreadPool::run(boost::asio::io_service& service, ThreadInit fct)
     service.run();
     --running_threads_;
 
+    if (on_exit_thread_fn)
+    {
+        on_exit_thread_fn();
+    }
+
     LOG(thread_logger, debug) << "Thread stopped";
 }
 
@@ -315,6 +320,11 @@ bool ThreadPool::runningInPool() const noexcept
 size_t ThreadPool::threads() const noexcept
 {
     return nb_thread_;
+}
+
+void ThreadPool::set_cleanup_fn(std::function<void()> cleanup_fn)
+{
+    on_exit_thread_fn = std::move(cleanup_fn);
 }
 
 } // namespace thread

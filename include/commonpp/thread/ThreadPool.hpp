@@ -102,6 +102,9 @@ public:
     template <typename Callable>
     void dispatchAll(Callable callable);
 
+    // called by each thread before exiting
+    void set_cleanup_fn(std::function<void()> cleanup_fn);
+
 private:
     template <typename Duration, typename Callable>
     void schedule_timer(TimerPtr& timer, Duration, Callable&& callable);
@@ -122,6 +125,8 @@ private:
     std::vector<std::unique_ptr<boost::asio::io_service::work>> works_;
 
     tbb::enumerable_thread_specific<decltype(createPicker(services_))> picker_;
+
+    std::function<void()> on_exit_thread_fn;
 };
 
 template <typename Duration, typename Callable>
