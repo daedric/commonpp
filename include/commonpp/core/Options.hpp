@@ -86,12 +86,12 @@ struct Options
 
     bool operator&(Enum f) const noexcept
     {
-        return (flag_ & enum_to_number(f)) != 0;
+        return (flag_ & enum_to_number(f)) == enum_to_number(f);
     }
 
     bool operator[](Enum f) const noexcept
     {
-        return (flag_ & enum_to_number(f)) != 0;
+        return (flag_ & enum_to_number(f)) == enum_to_number(f);
     }
 
     template <Enum... e>
