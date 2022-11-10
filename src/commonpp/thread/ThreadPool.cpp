@@ -227,7 +227,6 @@ void ThreadPool::run(boost::asio::io_service& service, ThreadInit fct)
 
     LOG(thread_logger, debug) << "Start thread";
 
-    service.reset();
     service.run();
     --running_threads_;
 
@@ -264,6 +263,11 @@ void ThreadPool::stop()
     }
 
     threads_.clear();
+
+    for (auto& service : services_)
+    {
+        service->reset();
+    }
 }
 
 boost::asio::io_service& ThreadPool::getService(int service_id)
