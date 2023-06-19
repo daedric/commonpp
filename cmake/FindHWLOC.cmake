@@ -30,7 +30,7 @@ find_library(HWLOC_LIBRARY NAMES hwloc libhwloc
 set(HWLOC_LIBRARIES ${HWLOC_LIBRARY})
 set(HWLOC_INCLUDE_DIRS ${HWLOC_INCLUDE_DIR})
 
-find_package_handle_standard_args(Hwloc DEFAULT_MSG
+find_package_handle_standard_args(HWLOC DEFAULT_MSG
   HWLOC_LIBRARY HWLOC_INCLUDE_DIR)
 
 get_property(_type CACHE HWLOC_ROOT PROPERTY TYPE)

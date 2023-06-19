@@ -7,9 +7,10 @@
 # Copyright (c) 2015 Thomas Sanchez.  All rights reserved.
 #
 project(commonpp C CXX)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.9)
 
 cmake_policy(SET CMP0005 NEW)
+cmake_policy(SET CMP0069 NEW)
 
 # Require at least Windows 7 See:
 # https://msdn.microsoft.com/en-us/library/windows/desktop/aa383745(v=vs.85).aspx
