@@ -42,6 +42,8 @@ enum LoggingLevel
     fatal,
 };
 
+std::ostream& operator<<(std::ostream& strm, LoggingLevel level);
+
 UNUSED_ATTR static LoggingLevel to_severity(int lvl) noexcept
 {
     switch (lvl)
@@ -90,8 +92,6 @@ namespace core
 BOOST_LOG_ATTRIBUTE_KEYWORD(Severity, "Severity", LoggingLevel);
 BOOST_LOG_ATTRIBUTE_KEYWORD(Channel, "Channel", std::string);
 BOOST_LOG_ATTRIBUTE_KEYWORD(CommonppRecord, "CommonppRecord", bool);
-
-std::ostream& operator<<(std::ostream& strm, LoggingLevel level);
 
 using BasicLogger = boost::log::sources::severity_logger_mt<LoggingLevel>;
 using Logger = boost::log::sources::severity_channel_logger_mt<LoggingLevel>;
