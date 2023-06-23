@@ -42,6 +42,7 @@ enum LoggingLevel
     fatal,
 };
 
+std::string_view to_string(LoggingLevel level);
 std::ostream& operator<<(std::ostream& strm, LoggingLevel level);
 
 UNUSED_ATTR static LoggingLevel to_severity(int lvl) noexcept
@@ -126,7 +127,8 @@ using Logger = boost::log::sources::severity_channel_logger_mt<LoggingLevel>;
 FWD_DECLARE_LOGGER(global_logger, BasicLogger);
 
 #define LOGGER_CTOR_INLINE(component_name)                                     \
-    [component_name] {                                                         \
+    [component_name]                                                           \
+    {                                                                          \
         ::commonpp::core::Logger l(COMPONENT(component_name));                 \
         l.add_attribute("CommonppRecord",                                      \
                         boost::log::attributes::constant<bool>(true));         \
@@ -138,7 +140,8 @@ FWD_DECLARE_LOGGER(global_logger, BasicLogger);
 #define CREATE_LOGGER(logger, component_name)                                  \
     BOOST_LOG_INLINE_GLOBAL_LOGGER_CTOR_ARGS(                                  \
         logger##_type, ::commonpp::core::Logger, (COMPONENT(component_name))); \
-    static auto& logger = []() -> decltype(logger##_type::get()) {             \
+    static auto& logger = []() -> decltype(logger##_type::get())               \
+    {                                                                          \
         auto& l = logger##_type::get();                                        \
         l.add_attribute("CommonppRecord",                                      \
                         boost::log::attributes::constant<bool>(true));         \

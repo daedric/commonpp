@@ -51,21 +51,22 @@ namespace src = logging::sources;
 namespace commonpp
 {
 
-std::ostream& operator<<(std::ostream& strm, LoggingLevel level)
+std::string_view to_string(LoggingLevel level)
 {
+
     static const char* LEVELS[] = {"trace",   "debug", "info",
                                    "warning", "error", "fatal"};
 
-    if (static_cast<std::size_t>(level) < get_array_size(LEVELS))
+    if (BOOST_LIKELY(static_cast<std::size_t>(level) < get_array_size(LEVELS)))
     {
-        strm << LEVELS[level];
+        return LEVELS[level];
     }
-    else
-    {
-        strm << "level unknown: " << static_cast<int>(level);
-    }
+    return "UNKNOWN LEVEL";
+}
 
-    return strm;
+std::ostream& operator<<(std::ostream& os, LoggingLevel level)
+{
+    return os << to_string(level);
 }
 namespace core
 {
