@@ -148,6 +148,18 @@ FWD_DECLARE_LOGGER(global_logger, BasicLogger);
         return l;                                                              \
     }();
 
+#define CREATE_LOGGER_WITH_INIT(logger, component_name, init_fn_like)          \
+    BOOST_LOG_INLINE_GLOBAL_LOGGER_CTOR_ARGS(                                  \
+        logger##_type, ::commonpp::core::Logger, (COMPONENT(component_name))); \
+    static auto& logger = []() -> decltype(logger##_type::get())               \
+    {                                                                          \
+        auto& l = logger##_type::get();                                        \
+        l.add_attribute("CommonppRecord",                                      \
+                        boost::log::attributes::constant<bool>(true));         \
+        init_fn_like(l);                                                       \
+        return l;                                                              \
+    }();
+
 #define LOG_SEV(l, s) BOOST_LOG_SEV(l, s)
 #define GLOG_SEV(sev) LOG_SEV(::commonpp::core::global_logger, sev)
 #define LOG(l, s) BOOST_LOG_SEV(l, ::commonpp::s)
