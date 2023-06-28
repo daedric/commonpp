@@ -40,21 +40,25 @@ struct BoolWrapperCaller<default_return, C, void>
 };
 } // namespace detail
 
-// make any callable a function that returns bool
-template <bool default_return,
-          typename Callable,
-          typename ResultType = typename std::result_of<Callable()>::type>
-bool make_bool_functor(Callable&& call)
+template <typename Callable>
+bool make_bool_functor(Callable call)
 {
-    return detail::BoolWrapperCaller<default_return, Callable, ResultType>::call(
-        call);
-}
+    using result = decltype(call());
 
-template <typename Callable,
-          typename ResultType = typename std::result_of<Callable()>::type>
-bool make_bool_functor(Callable&& call)
-{
-    return detail::BoolWrapperCaller<true, Callable, ResultType>::call(call);
+    if constexpr (std::is_same_v<result, bool>)
+    {
+        return call();
+    }
+    else if constexpr (std::is_invocable<Callable>::value)
+    {
+        call();
+        return true;
+    }
+    else
+    {
+        static_assert(std::is_invocable<Callable>::value,
+                      "Callable is not invocable");
+    }
 }
 
 } // namespace traits
