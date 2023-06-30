@@ -54,8 +54,6 @@ set(INSTALL_CMAKE_DIR
     CACHE PATH "Installation directory for cmake files")
 
 option(BUILD_TESTS "Should the tests be built" ON)
-option(BUILD_EXAMPLES "Should the examples be built" ON)
-option(BUILD_BENCH "Should the bench be built" ON)
 
 set(commonpp_MAJOR "0")
 set(commonpp_MINOR "1")
@@ -123,10 +121,6 @@ check_have_thread_local_specifier(HAVE_THREAD_LOCAL_SPECIFIER)
 
 # Thread
 find_package(Threads REQUIRED)
-find_package(TBB REQUIRED)
-include_directories(SYSTEM ${TBB_INCLUDE_DIRS})
-link_directories(${TBB_LIBRARY_DIRS})
-link_directories(${TBB_DEBUG_LIBRARY_DIRS})
 
 find_package(HWLOC)
 if(HWLOC_FOUND)
@@ -163,7 +157,7 @@ find_package(
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
-set(COMMONPP_DEPS ${Boost_LIBRARIES} TBB::tbb ${CMAKE_THREAD_LIBS_INIT})
+set(COMMONPP_DEPS ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
 if(UNIX AND NOT APPLE)
   set(COMMONPP_DEPS ${COMMONPP_DEPS} rt)
@@ -176,14 +170,6 @@ endif()
 
 add_subdirectory(src/)
 add_subdirectory(include/)
-
-if(${BUILD_EXAMPLES})
-  add_subdirectory(examples/)
-endif()
-
-if(${BUILD_BENCH})
-  add_subdirectory(bench/)
-endif()
 
 if(${BUILD_TESTS})
   enable_testing()

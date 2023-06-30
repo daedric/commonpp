@@ -74,7 +74,6 @@ ThreadPool::ThreadPool(size_t nb_thread, std::string name, size_t nb_services)
 : nb_thread_(nb_thread)
 , nb_services_(nb_services)
 , name_(std::move(name))
-, picker_([this] { return createPicker(services_); })
 {
     if (nb_services < 1)
     {
@@ -130,11 +129,9 @@ ThreadPool::ThreadPool(ThreadPool&& pool)
 , threads_(move(pool.threads_))
 , services_(move(pool.services_))
 , works_(move(pool.works_))
-, picker_([this] { return createPicker(services_); })
 {
     running_threads_.store(pool.running_threads_.load());
     pool.running_threads_ = 0;
-    pool.picker_.clear();
     pool.running_ = false;
 }
 
@@ -247,7 +244,6 @@ void ThreadPool::stop()
 
     running_ = false;
     works_.clear();
-    picker_.clear();
 
     for (auto& service : services_)
     {
@@ -282,7 +278,12 @@ boost::asio::io_context& ThreadPool::getService(int service_id)
     case ROUND_ROBIN:
         return *services_[current_service_++ % nb_services_];
     case RANDOM_SERVICE:
-        return *(picker_.local()());
+    {
+        static thread_local std::random_device rd;
+        static thread_local std::mt19937 gen(rd());
+        std::uniform_int_distribution<> distribution(0, services_.size() - 1);
+        return *services_[distribution(gen)];
+    }
     case CURRENT_SERVICE:
         return getCurrentIOService();
     default:

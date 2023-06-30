@@ -1,5 +1,8 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/uicpe9aefv7ufiqs/branch/master?svg=true)](https://ci.appveyor.com/project/daedric/commonpp/branch/master)
 
+*This reposiroty is being reworked a bit. The readme is not up to date: TBB is
+not required anymore and nor is there a metric library*
+
 # CommonPP
 
 `commonpp` is a multi purpose library easing very few operations like:

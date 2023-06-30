@@ -14,5 +14,4 @@ add_commonpp_library_source(
         string_encode.cpp
         LoggingInterface.cpp
         json_escape.cpp
-        Gelf.cpp
         )

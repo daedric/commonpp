@@ -30,7 +30,6 @@ endmacro()
 
 add_subdirectory(net)
 add_subdirectory(thread)
-add_subdirectory(metric)
 add_subdirectory(core)
 
 add_library(commonpp ${ALL_SRCS})

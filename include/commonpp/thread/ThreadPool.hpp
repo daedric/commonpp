@@ -21,7 +21,6 @@
 #include <boost/asio/deadline_timer.hpp>
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_context.hpp>
-#include <tbb/enumerable_thread_specific.h>
 
 #include <commonpp/core/RandomValuePicker.hpp>
 #include <commonpp/core/traits/function_wrapper.hpp>
@@ -129,9 +128,6 @@ private:
     std::vector<std::thread> threads_;
     std::vector<std::shared_ptr<io_context>> services_;
     std::vector<boost::asio::executor_work_guard<executor>> works_;
-
-    tbb::enumerable_thread_specific<decltype(createPicker(services_))> picker_;
-
     std::function<void()> on_exit_thread_fn;
 };
 
