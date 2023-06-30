@@ -11,7 +11,10 @@
 #include "commonpp/thread/ThreadPool.hpp"
 
 #include <atomic>
+#include <boost/asio/executor_work_guard.hpp>
+#include <boost/asio/io_context.hpp>
 #include <functional>
+#include <latch>
 
 #include "commonpp/core/LoggingInterface.hpp"
 #include "commonpp/core/Utils.hpp"
@@ -93,14 +96,12 @@ ThreadPool::ThreadPool(size_t nb_thread, std::string name, size_t nb_services)
     services_.reserve(nb_services);
     works_.reserve(nb_services);
     const std::size_t concurrency_hint = nb_thread / nb_services;
-    std::generate_n(std::back_inserter(services_), nb_services, [concurrency_hint] {
-        return std::make_shared<boost::asio::io_service>(concurrency_hint);
-    });
+    std::generate_n(std::back_inserter(services_), nb_services,
+                    [concurrency_hint]
+                    { return std::make_shared<io_context>(concurrency_hint); });
 }
 
-ThreadPool::ThreadPool(size_t nb_thread,
-                       boost::asio::io_service& service,
-                       std::string name)
+ThreadPool::ThreadPool(size_t nb_thread, io_context& service, std::string name)
 : nb_thread_(nb_thread)
 , nb_services_(1)
 , name_(std::move(name))
@@ -175,18 +176,19 @@ void ThreadPool::start(ThreadInit fct, ThreadDispatchPolicy policy)
         }
     }
 
-    int i = 0;
-    std::generate_n(std::back_inserter(works_), nb_services_, [this, &i] {
-        return std::unique_ptr<boost::asio::io_service::work>(
-            new boost::asio::io_service::work(*services_[i++]));
-    });
+    for (size_t i = 0; i < nb_services_; ++i)
+    {
+        works_.emplace_back(boost::asio::make_work_guard(*services_[i]));
+    }
 
+    std::latch latch{static_cast<ptrdiff_t>(nb_thread_)};
     threads_.reserve(nb_thread_);
     for (size_t i = 0; i < nb_thread_; ++i)
     {
         threads_.emplace_back(&ThreadPool::run, this,
                               std::ref(getService(i % nb_services_)),
-                              [this, fct, i] {
+                              [this, fct, i, &latch]
+                              {
                                   auto suffix = "#" + std::to_string(i) + "|S#" +
                                                 std::to_string(i % nb_services_);
                                   if (name_.empty())
@@ -203,20 +205,18 @@ void ThreadPool::start(ThreadInit fct, ThreadDispatchPolicy policy)
                                   {
                                       fct();
                                   }
+                                  latch.count_down();
                               });
 
         binder(threads_.back());
     }
 
-    while (running_threads_ != nb_thread_)
-    {
-        std::this_thread::yield();
-    }
+    latch.wait();
 
     running_ = true;
 }
 
-void ThreadPool::run(boost::asio::io_service& service, ThreadInit fct)
+void ThreadPool::run(io_context& service, ThreadInit fct)
 {
     if (fct)
     {
@@ -270,7 +270,7 @@ void ThreadPool::stop()
     }
 }
 
-boost::asio::io_service& ThreadPool::getService(int service_id)
+boost::asio::io_context& ThreadPool::getService(int service_id)
 {
     if (nb_services_ == 1)
     {
@@ -290,7 +290,7 @@ boost::asio::io_service& ThreadPool::getService(int service_id)
     }
 }
 
-boost::asio::io_service& ThreadPool::getCurrentIOService()
+ThreadPool::io_context& ThreadPool::getCurrentIOService()
 {
     int i = 0;
     auto current_id = std::this_thread::get_id();

@@ -19,7 +19,8 @@
 #include <vector>
 
 #include <boost/asio/deadline_timer.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/executor_work_guard.hpp>
+#include <boost/asio/io_context.hpp>
 #include <tbb/enumerable_thread_specific.h>
 
 #include <commonpp/core/RandomValuePicker.hpp>
@@ -39,10 +40,16 @@ public:
     using ThreadInit = std::function<void()>;
 
 public:
+    using io_context = boost::asio::io_context;
+    using executor = io_context::executor_type;
+    using deadline_timer = boost::asio::basic_deadline_timer<
+        boost::posix_time::ptime,
+        boost::asio::time_traits<boost::posix_time::ptime>,
+        executor>;
+    using TimerPtr = std::shared_ptr<deadline_timer>;
+
     ThreadPool(size_t nb_thread, std::string name = "", size_t nb_services = 1);
-    ThreadPool(size_t nb_thread,
-               boost::asio::io_service& service,
-               std::string name = "");
+    ThreadPool(size_t nb_thread, io_context& service, std::string name = "");
     ~ThreadPool();
 
     ThreadPool(ThreadPool&&);
@@ -78,15 +85,14 @@ public:
     }
 
     bool runningInPool() const noexcept;
-    boost::asio::io_service& getCurrentIOService();
+    io_context& getCurrentIOService();
 
     void start(ThreadInit fct = ThreadInit(),
                ThreadDispatchPolicy policy = ThreadDispatchPolicy::Random);
     void stop();
 
-    boost::asio::io_service& getService(int service_id = ROUND_ROBIN);
+    boost::asio::io_context& getService(int service_id = ROUND_ROBIN);
 
-    using TimerPtr = std::shared_ptr<boost::asio::deadline_timer>;
     // if callable returns a boolean, if it returns true the timer will be
     // rescheduled automatically
     template <typename Duration, typename Callable>
@@ -109,7 +115,7 @@ private:
     template <typename Duration, typename Callable>
     void schedule_timer(TimerPtr& timer, Duration, Callable&& callable);
 
-    void run(boost::asio::io_service&, ThreadInit fct);
+    void run(io_context&, ThreadInit fct);
 
 private:
     bool running_ = false;
@@ -121,8 +127,8 @@ private:
     std::atomic_uint running_threads_{0};
 
     std::vector<std::thread> threads_;
-    std::vector<std::shared_ptr<boost::asio::io_service>> services_;
-    std::vector<std::unique_ptr<boost::asio::io_service::work>> works_;
+    std::vector<std::shared_ptr<io_context>> services_;
+    std::vector<boost::asio::executor_work_guard<executor>> works_;
 
     tbb::enumerable_thread_specific<decltype(createPicker(services_))> picker_;
 
@@ -134,23 +140,24 @@ void ThreadPool::schedule_timer(TimerPtr& timer, Duration delay, Callable&& call
 {
     timer->expires_from_now(boost::posix_time::milliseconds(
         std::chrono::duration_cast<std::chrono::milliseconds>(delay).count()));
-    timer->async_wait([this, delay, timer,
-                       callable](const boost::system::error_code& error) mutable {
-        if (error)
+    timer->async_wait(
+        [this, delay, timer, callable](const boost::system::error_code& error) mutable
         {
-            if (error != boost::asio::error::operation_aborted)
+            if (error)
             {
-                throw std::runtime_error(error.message());
+                if (error != boost::asio::error::operation_aborted)
+                {
+                    throw std::runtime_error(error.message());
+                }
+
+                return;
             }
 
-            return;
-        }
-
-        if (traits::make_bool_functor(callable))
-        {
-            schedule_timer(timer, delay, callable);
-        }
-    });
+            if (traits::make_bool_functor(callable))
+            {
+                schedule_timer(timer, delay, callable);
+            }
+        });
 }
 
 template <typename Duration, typename Callable>
@@ -160,8 +167,7 @@ ThreadPool::TimerPtr ThreadPool::schedule(Duration delay,
 {
     static_assert(traits::is_duration<Duration>::value,
                   "A std::chrono::duration is expected here");
-    auto timer =
-        std::make_shared<boost::asio::deadline_timer>(getService(service_id));
+    TimerPtr timer = std::make_shared<deadline_timer>(getService(service_id));
     schedule_timer(timer, delay, std::forward<Callable>(callable));
     return timer;
 }
