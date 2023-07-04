@@ -125,10 +125,10 @@ ThreadPool::ThreadPool(ThreadPool&& pool)
 : running_(pool.running_)
 , nb_thread_(pool.nb_thread_)
 , nb_services_(pool.nb_services_)
-, name_(move(pool.name_))
-, threads_(move(pool.threads_))
-, services_(move(pool.services_))
-, works_(move(pool.works_))
+, name_(std::move(pool.name_))
+, threads_(std::move(pool.threads_))
+, services_(std::move(pool.services_))
+, works_(std::move(pool.works_))
 {
     running_threads_.store(pool.running_threads_.load());
     pool.running_threads_ = 0;
