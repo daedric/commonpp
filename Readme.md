@@ -22,7 +22,7 @@ however I'd appreciate any bug fix, pull request and comment.
 
 ### Dependencies
 
-`commonpp` depends on Boost and TBB, a C++11 compiler and CMake to be built.
+`commonpp` depends on Boost and TBB, a C++17 compiler and CMake to be built.
 It builds on Mac OS X and Linux. It probably build on *BSD but I did not test
 (yet).
 

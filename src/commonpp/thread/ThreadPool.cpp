@@ -262,7 +262,7 @@ void ThreadPool::stop()
 
     for (auto& service : services_)
     {
-        service->reset();
+        service->restart();
     }
 }
 

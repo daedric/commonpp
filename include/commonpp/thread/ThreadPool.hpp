@@ -18,9 +18,11 @@
 #include <thread>
 #include <vector>
 
-#include <boost/asio/deadline_timer.hpp>
+#include <boost/asio/dispatch.hpp>
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/post.hpp>
+#include <boost/asio/steady_timer.hpp>
 
 #include <commonpp/core/RandomValuePicker.hpp>
 #include <commonpp/core/traits/function_wrapper.hpp>
@@ -41,11 +43,9 @@ public:
 public:
     using io_context = boost::asio::io_context;
     using executor = io_context::executor_type;
-    using deadline_timer = boost::asio::basic_deadline_timer<
-        boost::posix_time::ptime,
-        boost::asio::time_traits<boost::posix_time::ptime>,
-        executor>;
-    using TimerPtr = std::shared_ptr<deadline_timer>;
+    using steady_timer = boost::asio::basic_waitable_timer<std::chrono::steady_clock,
+        boost::asio::wait_traits<std::chrono::steady_clock>, executor>;
+    using TimerPtr = std::shared_ptr<steady_timer>;
 
     ThreadPool(size_t nb_thread, std::string name = "", size_t nb_services = 1);
     ThreadPool(size_t nb_thread, io_context& service, std::string name = "");
@@ -74,13 +74,13 @@ public:
     template <typename Callable>
     void post(Callable&& callable, int service_id = ROUND_ROBIN)
     {
-        getService(service_id).post(std::forward<Callable>(callable));
+        boost::asio::post(getService(service_id), std::forward<Callable>(callable));
     }
 
     template <typename Callable>
     void dispatch(Callable&& callable, int service_id = ROUND_ROBIN)
     {
-        getService(service_id).dispatch(std::forward<Callable>(callable));
+        boost::asio::dispatch(getService(service_id), std::forward<Callable>(callable));
     }
 
     bool runningInPool() const noexcept;
@@ -134,8 +134,7 @@ private:
 template <typename Duration, typename Callable>
 void ThreadPool::schedule_timer(TimerPtr& timer, Duration delay, Callable&& callable)
 {
-    timer->expires_from_now(boost::posix_time::milliseconds(
-        std::chrono::duration_cast<std::chrono::milliseconds>(delay).count()));
+    timer->expires_after(std::chrono::duration_cast<std::chrono::milliseconds>(delay));
     timer->async_wait(
         [this, delay, timer, callable](const boost::system::error_code& error) mutable
         {
@@ -163,7 +162,7 @@ ThreadPool::TimerPtr ThreadPool::schedule(Duration delay,
 {
     static_assert(traits::is_duration<Duration>::value,
                   "A std::chrono::duration is expected here");
-    TimerPtr timer = std::make_shared<deadline_timer>(getService(service_id));
+    TimerPtr timer = std::make_shared<steady_timer>(getService(service_id));
     schedule_timer(timer, delay, std::forward<Callable>(callable));
     return timer;
 }

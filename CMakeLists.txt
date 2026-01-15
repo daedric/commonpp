@@ -37,7 +37,7 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 endif()
 
 set(CMAKE_CXX_STANDARD
-    14
+    20
     CACHE STRING "C++ standard for all targets.")
 
 set(INSTALL_LIB_DIR
