@@ -144,20 +144,20 @@ if("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
 endif()
 
 find_package(
-  Boost 1.54.0
-  COMPONENTS unit_test_framework
-             log
-             log_setup
-             date_time
-             filesystem
-             thread
-             system
+  Boost 1.85.0
   REQUIRED)
 
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIR})
 
-set(COMMONPP_DEPS ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+# Only link required boost libraries, exclude test libraries
+set(COMMONPP_DEPS
+    Boost::log
+    Boost::log_setup
+    Boost::thread
+    Boost::timer
+    Boost::chrono
+    ${CMAKE_THREAD_LIBS_INIT})
 
 if(UNIX AND NOT APPLE)
   set(COMMONPP_DEPS ${COMMONPP_DEPS} rt)
